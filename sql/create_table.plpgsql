@@ -1,0 +1,55 @@
+DROP TABLE IF EXISTS subdivision;
+DROP TABLE IF EXISTS staff;
+DROP TABLE IF EXISTS product;
+DROP TABLE IF EXISTS client;
+DROP TABLE IF EXISTS product_order;
+DROP TABLE IF EXISTS product_mm_product_order;
+
+CREATE table subdivision(
+    subdivision_id serial PRIMARY KEY,
+    chief varchar(100),
+    quanity_of_produced varchar(100),
+    street varchar(100) not null
+);
+
+CREATE table staff(
+    staff_id serial PRIMARY KEY,
+    first_name text not null,
+    last_name text,
+    phone_number text not null,
+    quantinty_of_products_producted varchar not null DEFAULT 0,
+    role varchar,
+    salary int,
+    subdivison_id int REFERENCES subdivision(subdivision_id),
+    UNIQUE (phone_number)
+);
+
+CREATE TABLE product(
+    product_id serial PRIMARY KEY,
+    product_name varchar(50) not null,
+    product_price int not null,
+    product_type varchar(50),
+    subdivison_id int REFERENCES subdivision(subdivision_id)
+);
+
+create table client(
+    client_id bigserial PRIMARY KEY,
+    first_name text not null,
+    last_name text,
+    phone_number text not null,
+    adress text not null,
+    UNIQUE (phone_number)
+);
+
+CREATE TABLE product_order(
+    product_order_id bigserial PRIMARY key,
+    product_order_date date not null,
+    client_id bigint REFERENCES client(client_id)
+);
+
+CREATE TABLE product_mm_product_order(
+    product_order_id bigint,
+    product_id int,
+    product_price int,
+    PRIMARY key(product_order_id, product_id)
+);

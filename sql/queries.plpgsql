@@ -1,0 +1,54 @@
+4.2  Получить список клиентов, которые потратили наибольшую сумму в каждом виде продукции.
+
+WITH client_costs AS
+(SELECT product_id, client_id,
+ RANK() OVER (PARTITION BY product_id ORDER BY SUM(supply.product_count * supply.product_price) DESC) AS cost_rank
+ FROM product 
+ JOIN supply USING(product_id)
+ JOIN order_ USING (order_id)
+ JOIN client USING(client_id)
+ GROUP BY product_id, client_id
+)
+
+SELECT p.product_id, product_name,
+c.client_id, first_name||' '||last_name as client_name
+FROM product P
+JOIN client_costs CC ON (P.product_id = CC.product_id)
+JOIN client C ON ( C.client_id = CC.client_id)
+WHERE CC.cost_rank = 1
+ORDER BY p.product_id, c.client_id
+
+
+
+4.1 Создать представление, формирующее список продуктов с указанием рейтинга (места) при ранжировании по:
+– количеству сотрудников, занятых в соответствующих подразделениях;
+– затратам на корма; 
+– среднегодовому доходу от их продажи.
+
+CREATE OR REPLACE VIEW product_rating AS 
+
+WITH StaffDivision AS 
+(SELECT subdivision_id, COUNT(staff_id)
+FROM subdivision
+JOIN staff USING(subdivision_id)
+GROUP BY subdivision_id),
+
+AvgRevenue AS
+(SELECT product_id,
+ROUND(SUM(supply.product_count*supply.product_price)
+    / count(distinct EXTRACT (YEAR FROM order_.date_)), 2) as avg_revenue
+FROM product
+JOIN supply USING (product_id)
+JOIN order_ USING(order_id)
+GROUP BY product_id)
+
+SELECT product_id, product_name, 
+SD.count AS staff_count,
+DENSE_RANK() OVER (ORDER BY SD.count DESC) AS staff_count_rate,
+P.required_feed,
+DENSE_RANK() OVER (ORDER BY P.required_feed DESC) AS feed_rate,
+AR.avg_revenue,
+DENSE_RANK() OVER (ORDER BY AR.avg_revenue DESC) AS avg_rev_rate
+FROM product P 
+JOIN StaffDivision SD USING(subdivision_id)
+JOIN AvgRevenue AR USING(product_id)

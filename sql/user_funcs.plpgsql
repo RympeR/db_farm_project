@@ -1,0 +1,68 @@
+--5.2 Составить триггер для блокирования продажи отсутствующей продукции.
+
+CREATE OR REPLACE FUNCTION Check_Amount() RETURNS TRIGGER AS $$
+DECLARE
+  produced_amount NUMERIC:=0;
+  sold_amount NUMERIC:=0;
+  SubdivisionId subdivision.subdivision_id%TYPE;
+BEGIN
+  SELECT subdivision_id INTO SubdivisionId
+  FROM product
+  WHERE product_id = NEW.product_id;
+
+  SELECT quanity_of_produced INTO produced_amount
+  FROM subdivision
+  WHERE subdivision_id = SubdivisionId;
+  
+  SELECT SUM(product_count) INTO sold_amount
+  FROM product
+  JOIN supply USING(product_id)
+  WHERE subdivision_id = SubdivisionId;
+  
+  IF(produced_amount < sold_amount + NEW.product_count)
+    THEN RAISE EXCEPTION 'Недостаточное количество продукции';
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER NewSupply
+BEFORE INSERT OR UPDATE ON supply
+FOR EACH ROW EXECUTE PROCEDURE Check_Amount();
+
+
+
+-- 5.1 Создать хранимую процедуру для формирования предварительного заказа на корма для конкретной продукции
+-- на следующий год (как прогноз на основании прошлогоднего и перспективного соотношения «объём кормов» / «объём проданной продукции»).
+-- Название продукции передавать, как параметр.
+
+CREATE OR REPLACE FUNCTION Create_Res_Order(ProductName product.product_name%TYPE) RETURNS VOID AS $$
+DECLARE
+  RequiredFeed  product.required_feed%TYPE:=0;
+  SoldAmount NUMERIC:=0;
+  SubdivisionID subdivision.subdivision_id%TYPE;
+  AvgPrice order_resource.resource_price%TYPE;
+BEGIN
+  SELECT required_feed, subdivision_id
+  INTO RequiredFeed,SubdivisionID
+  FROM product
+  WHERE product_name = ProductName;
+  
+  SELECT AVG(resource_price) INTO AvgPrice
+  FROM order_resource 
+  WHERE subdivision_id = SubdivisionID
+  AND resource_type = 'корм';
+  
+  SELECT SUM(product_count) 
+  INTO SoldAmount
+  FROM supply
+  JOIN product USING(product_id)
+  JOIN order_ USING (order_id)
+  WHERE product_name = ProductName
+  AND order_.date_ BETWEEN CURRENT_DATE - INTERVAL '1 year' AND CURRENT_DATE;
+  
+  INSERT INTO order_resource (resource_type, resource_price, subdivision_id, resource_count) 
+   VALUES ('корм',AvgPrice,SubdivisionID,SoldAmount*RequiredFeed*1.1); 
+  
+END;
+$$ LANGUAGE plpgsql;

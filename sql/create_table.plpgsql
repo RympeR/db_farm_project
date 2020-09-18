@@ -53,3 +53,6 @@ CREATE TABLE product_mm_product_order(
     product_price int,
     PRIMARY key(product_order_id, product_id)
 );
+
+
+

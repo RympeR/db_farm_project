@@ -66,3 +66,21 @@ BEGIN
   
 END;
 $$ LANGUAGE plpgsql;
+
+
+-----------USER STORY------------------------------
+--1.Сотрудник
+--добавление клиента в базу
+DROP FUNCTION insert_new_client;
+CREATE OR REPLACE FUNCTION insert_new_client(last_name_client varchar, first_name_client varchar,
+   mobile_number_client varchar, adress_of_client_client varchar) RETURNS INT AS $$
+  
+  INSERT INTO client(last_name, first_name, mobile_number, adress_of_client) VALUES
+      (last_name_client, first_name_client, mobile_number_client, adress_of_client_client);
+  SELECT max(client_id)  FROM client;
+$$LANGUAGE sql;
+--редактирование клиента в базе
+CREATE OR REPLACE FUNCTION update_client(last_name_client varchar, first_name_client varchar,
+   mobile_number_client varchar, adress_of_client_client varchar) RETURNS VOID AS $$
+  
+$$ LANGUAGE sql;

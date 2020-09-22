@@ -8,18 +8,21 @@
 {% block title %}Statistics    {% endblock %}
 {% block body %}
     <div class = "intro">
-        <h1>Посмотреть стоимость</h1>
+        <h1>РџСЂРѕСЃРјРѕС‚СЂ РљР»РёРµРЅС‚РѕРІ</h1>
 <div class = "container">
     <img src = "{{ url_for('static',filename='imgs/Service.jpg') }}">
     <form method="post">
         <div class = "dws-input">
-        <input type = "text" name = "name" placeholder = "Название услуги:">
+        <input type = "text" name = "client_num" placeholder = "РќРѕРјРµСЂ РєР»РёРµРЅС‚Р°:">
+        <input type = "text" name = "client_name" placeholder = "РРјСЏ:">
+        <input type = "text" name = "client_sur" placeholder = "Р¤Р°РјРёР»РёСЏ:">
+        <input type = "text" name = "client_fname" placeholder = "РћС‚С‡РµСЃС‚РІРѕ:">
         </div>
-        <button class = "dws-submit2" type = "submit" name = "submit" value = "Report">Обновить список услуг</button>
+        <button class = "dws-submit2" type = "submit" name = "submit" value = "Report">РџСЂРѕСЃРјРѕС‚СЂ</button>
         <br />
         <br />
         <br />
-        <a class = "restore" href = "/client/{{username}}">Назад</a>
+        <a class = "restore" href = "/client/{{username}}">РќР°Р·Р°Рґ</a>
     </form>
 </div>
 </div>    {% endblock %}

@@ -46,18 +46,6 @@ input[type="text"], input[type="password"]{
     border-radius: 4px;
     padding-left: 10px;
 }
-.dws-submit2{
-    padding: 13px 30px;
-    margin: 10px 0 20px 0;
-    font-size: 40px;
-    color: #fff;
-    background-color: #2ca8c6;
-    border: none;
-    border-bottom: 4px solid #6ee9fd;
-    cursor: pointer;
-    font-family: 'mr_KindlyJasmineG', cursive;
-    text-decoration: none;
-}
 .dws-submit2:hover{
     transition: all 0.5s;
     background: #fff;
@@ -73,15 +61,11 @@ input[type="text"], input[type="password"]{
     color: red;
 }
 .dws-submit2{
-     padding: 13px 30px;
-    margin: 10px 0 20px 0;
-    font-size: 40px;
+    padding: 13px 40px;
+    font-size: 25px;
     color: #fff;
-    background-color: #2ca8c6;
     border: none;
-    border-bottom: 4px solid #6ee9fd;
     cursor: pointer;
-    font-family: 'mr_KindlyJasmineG', cursive;
     text-decoration: none;
 }
 .dws-submit2:hover{

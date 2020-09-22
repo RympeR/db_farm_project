@@ -492,7 +492,7 @@ def client(username):
     return render_template('Client.html', dirstaff=data1, username=session['username'])
 
 
-@app.route('/client/check_payment/<username>/<first_date>/<last_date>/', methods=('POST', 'GET'))
+@app.route('/client/check_payment/<username>/', methods=('POST', 'GET'))
 def client_check_payment(username):
     if 'username' not in session or session['username'] != username:
         abort(401)
@@ -519,8 +519,8 @@ def client_check_payment(username):
     return render_template('payments.html', username=session['username'])
 
 
-@app.route('/client/check_places/<username>/<city>/', methods=('POST', 'GET'))
-def check_places(username, city):
+@app.route('/client/check_places/<username>/', methods=('POST', 'GET'))
+def check_places(username):
     if 'username' not in session or session['username'] != username:
         abort(401)
 
@@ -533,11 +533,12 @@ def check_places(username, city):
             execute_query('farm_client', 'client', query)
         except Exception as identifier:
             pass
-    return render_template('city.html', city=city)
+        return render_template('city.html', username=session['username'], city=city)
+    return render_template('city.html', username=session['username'])
 
 
-@app.route('/client/check_cost/<username>/<product_name>/', methods=('POST', 'GET'))
-def check_cost(username, product_name):
+@app.route('/client/check_cost/<username>/', methods=('POST', 'GET'))
+def check_cost(username):
     if 'username' not in session or session['username'] != username:
         abort(401)
 
@@ -553,7 +554,8 @@ def check_cost(username, product_name):
                         WHERE product_name = '{product_name}'""")
         except Exception as identifier:
             pass
-    return render_template('cost.html', data=data, username=session['username'])
+        return render_template('cost.html', data=data, username=session['username'])
+    return render_template('cost.html', username=session['username'])
 
 # -------------------------------------------------------------------
 

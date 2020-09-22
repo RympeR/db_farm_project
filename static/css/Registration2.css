@@ -43,13 +43,11 @@ input[type="text"], input[type="password"]{
 .dws-submit{
     padding: 13px 30px;
     margin: 10px 0 20px 0;
-    font-size: 15px;
+    margin-top: 4em;
+    font-size: 40px;
     color: #fff;
-    background-color: #2ca8c6;
     border: none;
-    border-bottom: 4px solid #6ee9fd;
     cursor: pointer;
-    font-family: 'Kaushan Script', cursive;
     text-decoration: none;
 }
 .dws-submit:hover{

@@ -1,0 +1,80 @@
+{% extends 'basics.html' %} {% block style %}
+<link
+	rel="stylesheet"
+	href="{{ url_for('static',filename='css/FitnessClubSite.css') }}"
+/>
+<link
+	href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap"
+	rel="stylesheet"
+/>
+{% endblock %} {% block title %}Fitness Club {% endblock %} {% block body %}
+<header class="header">
+	<div class="container">
+		<div class="header_inner">
+			<div class="header_logo">
+				<a class="acc" href="/login">Account</a>
+			</div>
+		</div>
+	</div>
+</header>
+<div class="intro">
+	<div class="container">
+		<div class="intro_inner">
+			<h2 class="intro_supstitle">Your body - your power!</h2>
+			<h1 class="intro_title">Welcome to Fitness Club!</h1>
+		</div>
+	</div>
+</div>
+<section class="section">
+	<div class="container">
+		<div class="section_header">
+			<h3 class="section_suptitle">Почему мы лучший выбор?</h3>
+			<h2 class="section_title">История о нас</h2>
+			<div class="section_text">
+				<p>
+					Мы фитнес клуб, который работаем более 10 лет. Наш
+					тренерский состав помог нашим клиентам стать лучше воспитать
+					в себе самые лучшие качества, работать над собой и
+					добиваться успехов
+				</p>
+			</div>
+		</div>
+
+		<div class="about">
+			<div class="about_item">
+				<div class="about_img">
+					<img
+						src="{{ url_for('static',filename='imgs/photo1.jpg') }}"
+						width="380"
+						height="250"
+						alt=""
+					/>
+				</div>
+				<div class="about_text">Невероятный тренерский состав</div>
+			</div>
+			<div class="about_item">
+				<div class="about_img">
+					<img
+						src="{{ url_for('static',filename='imgs/photo2.jpg') }}"
+						width="380"
+						height="250"
+						alt=""
+					/>
+				</div>
+				<div class="about_text">Интенсивные тренировки</div>
+			</div>
+			<div class="about_item">
+				<div class="about_img">
+					<img
+						src="{{ url_for('static',filename='imgs/photo3.jpg') }}"
+						width="380"
+						height="250"
+						alt=""
+					/>
+				</div>
+				<div class="about_text">Групповые тренировки</div>
+			</div>
+		</div>
+	</div>
+</section>
+{% endblock %}

@@ -1,8 +1,8 @@
-from flask import Flask, render_template, url_for,redirect, request, session, flash, get_flashed_messages, abort
+from flask import Flask, render_template, url_for, redirect, request, session, flash, get_flashed_messages, abort
 from sqlalchemy import create_engine, MetaData
 import psycopg2
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import scoped_session, sessionmaker, relationship
+from sqlalchemy.orm import scoped_session, sessionmaker
 
 db = SQLAlchemy()
 
@@ -15,22 +15,15 @@ db = SQLAlchemy()
 app = Flask(__name__)
 app.secret_key = 'somesecretkeythatonlyishouldknow'
 session_variables = []
-role = 'guest:123456'
+role = 'farm_guest:guest'
 
-
-conn = psycopg2.connect(
-    host = '127.0.0.1',
-    user='postgres',
-    password='b01210b',
-    database='db_farm'
-)
 
 def execute_query(user, password, query):
     conn = psycopg2.connect(
-                host="127.0.0.1",
-                database="Cursovoi_Project",
-                user=user,
-                password=password
+        host="127.0.0.1",
+        database="farm",
+        user=user,
+        password=password
     )
     cursor = conn.cursor()
     cursor.execute(query)
@@ -39,9 +32,11 @@ def execute_query(user, password, query):
 
 
 def loadSession(role):
-    engine = create_engine(f'postgres+psycopg2://{role}@localhost:5432/Cursovoi_Project', convert_unicode=True)
+    engine = create_engine(
+        f'postgres+psycopg2://{role}@localhost:5432/farm', convert_unicode=True)
     #metadata = MetaData()
-    db_session = scoped_session(sessionmaker(autocommit=False,  autoflush=False, bind=engine))
+    db_session = scoped_session(sessionmaker(
+        autocommit=False,  autoflush=False, bind=engine))
     metadata = db.metadata
     session_variables.append(engine)
     session_variables.append(db_session)
@@ -56,50 +51,48 @@ def shutdown_session(exception=None):
     session_variables[1].remove()
 
 
-
-cursor = conn.cursor()
-#--------------404 PAGE------------------
+# --------------404 PAGE------------------
 @app.errorhandler(404)
 def pageNotFound(error):
     return "<h1>You got 404 mistake please get on correct url adres</h1>"
-#---------------------------------------
+# ---------------------------------------
 
-#------------------------LOGIN----------------------------
+# ------------------------LOGIN----------------------------
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     global role
     if 'login' and 'username' in session:
-        if session['login'] == 'admin':
+        if session['login'] == 'staff':
             try:
                 shutdown_session()
             except Exception as e:
                 pass
-            session['login'] = 'admin'
-            role = 'admin:admin'
+            session['login'] = 'farm_staff'
+            role = 'farm_staff:staff'
             return redirect(url_for('admin', username=session['username']))
-        elif session['login'] =='director':
+        elif session['login'] == 'director':
             try:
                 shutdown_session()
             except Exception as e:
                 pass
-            session['login'] = 'director'
-            role = 'director:123'
+            session['login'] = 'farm_director'
+            role = 'farm_director:director'
             return redirect(url_for('director', username=session['username']))
-        elif session['login'] == 'trainer':
+        elif session['login'] == 'farm_client':
             try:
                 shutdown_session()
             except Exception as e:
                 pass
-            session['login'] = 'trainer'
-            role = 'trainer:trainer'
+            session['login'] = 'farm_client'
+            role = 'farm_client:client'
             return redirect(url_for('trainer', username=session['username']))
 
-    if request.method == 'POST' :
+    if request.method == 'POST':
         username = request.form["username"]
         password = request.form['password']
-        session_ = loadSession('guest:123456')
-        query = f"SELECT role_name FROM roles JOIN staff ON role_to_login=id_role WHERE login = '{username}' AND passw = '{password}' ;"
-
+        session_ = loadSession('farm_guest:guest')
+        query = f"SELECT role FROM users WHERE login = '{username}' AND password = '{password}' ;"
+        print(query)
         try:
             role_ = session_.execute(query).fetchone()[0]
         except Exception as e:
@@ -108,23 +101,29 @@ def login():
             return render_template('Registation.html')
             # return f"{e}"
 
-        if role_ == 'administrator':
-            shutdown_session()
-            session['login'] = 'admin'
-            session['username'] = username
-            role = 'admin:admin'
+        if session['login'] == 'staff':
+            try:
+                shutdown_session()
+            except Exception as e:
+                pass
+            session['login'] = 'staff'
+            role = 'farm_staff:staff'
             return redirect(url_for('admin', username=session['username']))
-        elif role_ == 'director':
-            shutdown_session()
-            session['login'] = 'director'
-            session['username'] = username
-            role='director:123'
+        elif session['login'] == 'director':
+            try:
+                shutdown_session()
+            except Exception as e:
+                pass
+            session['login'] = 'farm_director'
+            role = 'farm_director:director'
             return redirect(url_for('director', username=session['username']))
-        elif role_ == 'trainer':
-            shutdown_session()
-            session['login'] = 'trainer'
-            session['username'] = username
-            role = 'trainer:trainer'
+        elif session['login'] == 'client':
+            try:
+                shutdown_session()
+            except Exception as e:
+                pass
+            session['login'] = 'farm_client'
+            role = 'farm_client:client'
             return redirect(url_for('trainer', username=session['username']))
         else:
             flash("Неверный логин или пароль")
@@ -148,11 +147,10 @@ def logout():
     print(session)
     return redirect(url_for('login'))
 
-#-------------------------------------------------------------------
+# -------------------------------------------------------------------
 
 
-
-#--------------------------DIRECTOR PAGES---------------------------
+# --------------------------DIRECTOR PAGES---------------------------
 @app.route('/director/<username>', methods=['GET'])
 def director(username):
     global role
@@ -160,7 +158,8 @@ def director(username):
         abort(401)
     role = "director:123"
     session_ = loadSession(role)
-    data1 = session_.execute("SELECT * from staff WHERE position_staff='Директор';")
+    data1 = session_.execute(
+        "SELECT * from staff WHERE position_staff='Директор';")
     data1 = data1.first()
     return render_template('Director.html', dirstaff=data1, username=session['username'])
 
@@ -196,11 +195,51 @@ def directoraddstaff(username):
             execute_query('director', '123', query)
             return redirect(url_for('directoraddstaffres', username=session['username']))
         except Exception as e:
-            #return render_template('Add_Staff.html')
+            # return render_template('Add_Staff.html')
             return render_template("Add_Staff.html", username=session['username'])
 
     else:
         return render_template("Add_Staff.html", username=session['username'])
+
+
+@app.route('/director/update_staff/<username>', methods=['POST', 'GET'])
+def directorupdatestaff(username):
+    # fix render template!!
+    if 'username' not in session or session['username'] != username:
+        abort(401)
+    try:
+        shutdown_session()
+    except Exception as e:
+        pass
+    if request.method == 'POST':
+        username = request.form["name_login"]
+        surname = request.form['surname']
+        lastname = request.form['patronomyc']
+        telephone = request.form['telephone']
+        position = request.form["position"]
+        service = request.form["service"]
+        service_type = request.form["service_type"]
+        login_ = request.form["login"]
+        password = request.form["passw"]
+
+        session_ = loadSession('director:123')
+        query = f"""select * from addnewstaff(
+                '{username}', '{surname}', 
+                '{lastname}', '{telephone}',
+                '{login_}', '{password}',
+                '{service}', '{service_type}',
+                '{position}');"""
+
+        try:
+            execute_query('director', '123', query)
+            return redirect(url_for('directoraddstaffres', username=session['username']))
+        except Exception as e:
+            # return render_template('Add_Staff.html')
+            return render_template("Add_Staff.html", username=session['username'])
+
+    else:
+        return render_template("Add_Staff.html", username=session['username'])
+
 
 @app.route('/director/addstaff_result/<username>', methods=['POST', 'GET'])
 def directoraddstaffres(username):
@@ -242,9 +281,245 @@ def directordelete(username):
 
     return render_template("Delete.html", username=session['username'])
 
-#-------------------------------------------------------------------
 
-#--------------------------CLIENT PAGES-----------------------------
+@app.route('/director/check_clients/<username>', methods=('POST', 'GET'))
+def director_check_clients(username):
+    if 'username' not in session or session['username'] != username:
+        abort(401)
+    if request.method == 'POST':
+        name = request.form['name']
+        surname = request.form['surname']
+        lastname = request.form['patronomyc']
+
+        #session_ = loadSession('director:123')
+        query = f"""select * from deletestaff(
+            '{name}', '{surname}', '{lastname}');"""
+        try:
+            execute_query('director', '123', query)
+            return redirect(url_for('directoraddstaffres', username=session['username']))
+        except Exception as e:
+            shutdown_session()
+            return render_template("Delete.html", username=session['username'])
+
+    return render_template("Delete.html", username=session['username'])
+
+@app.route('/director/check_products/<username>', methods=('POST', 'GET'))
+def director_check_products(username):
+    if 'username' not in session or session['username'] != username:
+        abort(401)
+    if request.method == 'POST':
+        name = request.form['name']
+        surname = request.form['surname']
+        lastname = request.form['patronomyc']
+
+        #session_ = loadSession('director:123')
+        query = f"""select * from deletestaff(
+            '{name}', '{surname}', '{lastname}');"""
+        try:
+            execute_query('director', '123', query)
+            return redirect(url_for('directoraddstaffres', username=session['username']))
+        except Exception as e:
+            shutdown_session()
+            return render_template("Delete.html", username=session['username'])
+
+    return render_template("Delete.html", username=session['username'])
+
+@app.route('/director/staff_activity/<username>', methods=('POST', 'GET'))
+def director_staff_activity(username):
+    if 'username' not in session or session['username'] != username:
+        abort(401)
+    if request.method == 'POST':
+        name = request.form['name']
+        surname = request.form['surname']
+        lastname = request.form['patronomyc']
+
+        #session_ = loadSession('director:123')
+        query = f"""select * from deletestaff(
+            '{name}', '{surname}', '{lastname}');"""
+        try:
+            execute_query('director', '123', query)
+            return redirect(url_for('directoraddstaffres', username=session['username']))
+        except Exception as e:
+            shutdown_session()
+            return render_template("Delete.html", username=session['username'])
+
+    return render_template("Delete.html", username=session['username'])
+
+@app.route('/director/subdiv_activity/<username>', methods=('POST', 'GET'))
+def director_subdiv_activity(username):
+    if 'username' not in session or session['username'] != username:
+        abort(401)
+    if request.method == 'POST':
+        name = request.form['name']
+        surname = request.form['surname']
+        lastname = request.form['patronomyc']
+
+        #session_ = loadSession('director:123')
+        query = f"""select * from deletestaff(
+            '{name}', '{surname}', '{lastname}');"""
+        try:
+            execute_query('director', '123', query)
+            return redirect(url_for('directoraddstaffres', username=session['username']))
+        except Exception as e:
+            shutdown_session()
+            return render_template("Delete.html", username=session['username'])
+
+    return render_template("Delete.html", username=session['username'])
+
+
+@app.route('/director/addsubdiv/<username>', methods=['POST', 'GET'])
+def directoraddsubdiv(username):
+    if 'username' not in session or session['username'] != username:
+        abort(401)
+    try:
+        shutdown_session()
+    except Exception as e:
+        pass
+    if request.method == 'POST':
+        username = request.form["name_login"]
+        surname = request.form['surname']
+        lastname = request.form['patronomyc']
+        telephone = request.form['telephone']
+        position = request.form["position"]
+        service = request.form["service"]
+        service_type = request.form["service_type"]
+        login_ = request.form["login"]
+        password = request.form["passw"]
+
+        session_ = loadSession('director:123')
+        query = f"""select * from addnewstaff(
+                '{username}', '{surname}', 
+                '{lastname}', '{telephone}',
+                '{login_}', '{password}',
+                '{service}', '{service_type}',
+                '{position}');"""
+
+        try:
+            execute_query('director', '123', query)
+            return redirect(url_for('directoraddstaffres', username=session['username']))
+        except Exception as e:
+            # return render_template('Add_Staff.html')
+            return render_template("Add_Staff.html", username=session['username'])
+
+    else:
+        return render_template("Add_Staff.html", username=session['username'])
+
+@app.route('/director/updatesubdiv/<username>', methods=['POST', 'GET'])
+def directorupdatesubdiv(username):
+    if 'username' not in session or session['username'] != username:
+        abort(401)
+    try:
+        shutdown_session()
+    except Exception as e:
+        pass
+    if request.method == 'POST':
+        username = request.form["name_login"]
+        surname = request.form['surname']
+        lastname = request.form['patronomyc']
+        telephone = request.form['telephone']
+        position = request.form["position"]
+        service = request.form["service"]
+        service_type = request.form["service_type"]
+        login_ = request.form["login"]
+        password = request.form["passw"]
+
+        session_ = loadSession('director:123')
+        query = f"""select * from addnewstaff(
+                '{username}', '{surname}', 
+                '{lastname}', '{telephone}',
+                '{login_}', '{password}',
+                '{service}', '{service_type}',
+                '{position}');"""
+
+        try:
+            execute_query('director', '123', query)
+            return redirect(url_for('directoraddstaffres', username=session['username']))
+        except Exception as e:
+            # return render_template('Add_Staff.html')
+            return render_template("Add_Staff.html", username=session['username'])
+
+    else:
+        return render_template("Add_Staff.html", username=session['username'])
+
+@app.route('/director/deletesubdiv/<username>', methods=['POST', 'GET'])
+def directordeletesubdiv(username):
+    if 'username' not in session or session['username'] != username:
+        abort(401)
+    try:
+        shutdown_session()
+    except Exception as e:
+        pass
+    if request.method == 'POST':
+        username = request.form["name_login"]
+        surname = request.form['surname']
+        lastname = request.form['patronomyc']
+        telephone = request.form['telephone']
+        position = request.form["position"]
+        service = request.form["service"]
+        service_type = request.form["service_type"]
+        login_ = request.form["login"]
+        password = request.form["passw"]
+
+        session_ = loadSession('director:123')
+        query = f"""select * from addnewstaff(
+                '{username}', '{surname}', 
+                '{lastname}', '{telephone}',
+                '{login_}', '{password}',
+                '{service}', '{service_type}',
+                '{position}');"""
+
+        try:
+            execute_query('director', '123', query)
+            return redirect(url_for('directoraddstaffres', username=session['username']))
+        except Exception as e:
+            # return render_template('Add_Staff.html')
+            return render_template("Add_Staff.html", username=session['username'])
+
+    else:
+        return render_template("Add_Staff.html", username=session['username'])
+
+
+@app.route('/director/updatesalary/<username>', methods=['POST', 'GET'])
+def directorupdatesalary(username):
+    if 'username' not in session or session['username'] != username:
+        abort(401)
+    try:
+        shutdown_session()
+    except Exception as e:
+        pass
+    if request.method == 'POST':
+        username = request.form["name_login"]
+        surname = request.form['surname']
+        lastname = request.form['patronomyc']
+        telephone = request.form['telephone']
+        position = request.form["position"]
+        service = request.form["service"]
+        service_type = request.form["service_type"]
+        login_ = request.form["login"]
+        password = request.form["passw"]
+
+        session_ = loadSession('director:123')
+        query = f"""select * from addnewstaff(
+                '{username}', '{surname}', 
+                '{lastname}', '{telephone}',
+                '{login_}', '{password}',
+                '{service}', '{service_type}',
+                '{position}');"""
+
+        try:
+            execute_query('director', '123', query)
+            return redirect(url_for('directoraddstaffres', username=session['username']))
+        except Exception as e:
+            # return render_template('Add_Staff.html')
+            return render_template("Add_Staff.html", username=session['username'])
+
+    else:
+        return render_template("Add_Staff.html", username=session['username'])
+
+
+# -------------------------------------------------------------------
+
+# --------------------------CLIENT PAGES-----------------------------
 @app.route('/client/<username>')
 def client(username):
     if 'username' not in session or session['username'] != username:
@@ -255,24 +530,74 @@ def client(username):
     data1 = data1.first()
     return render_template('client_func.html', dirstaff=data1, username=session['username'])
 
+
 @app.route('/client/check_payment/<username>/<first_date>/<last_date>/', methods=('POST', 'GET'))
 def client_check_payment(username):
     if 'username' not in session or session['username'] != username:
         abort(401)
-
+# client_id = {} and
     if request.method == 'POST':
         first_date = request.form['first_date']
         last_date = request.form['last_date']
-
-        query = f"""select * from func_name('{first_date}', '{last_date}');"""
+        session_ = loadSession('client:client')
+        query = f"""SELECT product_id, product_name, product_type, subdivision_id, 
+                            product.product_price, quanity_of_produced
+                        from client
+                            JOIN order_ USING(client_id)
+                            JOIN supply USING(order_id)
+                            JOIN product USING(product_id)
+                            JOIN subdivision USING(subdivision_id)
+                            WHERE  order_.date_ between '{first_date}' and '{last_date}';"""
+        data = session_.execute(query).all()
         try:
             execute_query('client', 'client', query)
         except Exception as identifier:
             pass
-#-------------------------------------------------------------------
+        return render_template('payments.html', data=data, username=session['username'])
 
-#--------------------------STAFF PAGES------------------------------
-@app.route('/admin/<username>')
+    return render_template('payments.html', username=session['username'])
+
+
+@app.route('/client/check_places/<username>/<city>/', methods=('POST', 'GET'))
+def check_places(username, city):
+    if 'username' not in session or session['username'] != username:
+        abort(401)
+
+    if request.method == 'POST':
+        city = request.form['city']
+        session_ = loadSession('client:client')
+        query = f"""SELECT subdivision_id, addres, chief_first_name || ' ' || chief_last_name as chief from subdivision
+                        where city = '{city}'"""
+        try:
+            execute_query('client', 'client', query)
+        except Exception as identifier:
+            pass
+    return render_template('city.html', city=city)
+
+
+@app.route('/client/check_cost/<username>/<product_name>/', methods=('POST', 'GET'))
+def check_cost(username, product_name):
+    if 'username' not in session or session['username'] != username:
+        abort(401)
+
+    session_ = loadSession('client:client')
+
+    if request.method == 'POST':
+        product_name = request.form['product_name']
+
+        try:
+            data = session_.execute(
+                f"""SELECT product_price, quanity_of_produced from product
+                        JOIN subdivision USING (subdivision_id)
+                        WHERE product_name = '{product_name}'""")
+        except Exception as identifier:
+            pass
+    return render_template('cost.html', data=data, username=session['username'])
+
+# -------------------------------------------------------------------
+
+# --------------------------STAFF PAGES------------------------------
+@app.route('/staff/<username>')
 def admin(username):
     if 'username' not in session or session['username'] != username:
         abort(401)
@@ -282,30 +607,8 @@ def admin(username):
     data1 = data1.first()
     return render_template('Admin.html', dirstaff=data1, username=session['username'])
 
-@app.route('/admin/newclient/<username>', methods=['POST', 'GET'])
-def adminnewclient(username):
-    validated = False
-    if 'username' not in session or session['username'] != username:
-        abort(401)
-    if request.method == 'POST':
-        # shutdown_session()
-        # session_ = loadSession('admin:admin')
-        phone = request.form['telephone']
-        name = request.form['name']
-        months = request.form['months']
-        try:
-            query = f"SELECT * FROM recab('{phone}', '{name}', {months});"
-            execute_query('admin', 'admin', query)
-            # data = session_.execute()
-            # session_.commit()
-            validated = True
-            return redirect(url_for('admin', username=session['username']))
-        except Exception as e:
-            return render_template("NewClient.html", username=session['username'])
-    return render_template("NewClient.html", username=session['username'])
 
-
-@app.route('/admin/addclient/<username>', methods=['POST', 'GET'])
+@app.route('/staff/addclient/<username>', methods=['POST', 'GET'])
 def adminaddnewclient(username):
     if 'username' not in session or session['username'] != username:
         abort(401)
@@ -323,14 +626,13 @@ def adminaddnewclient(username):
     return render_template("Add_Client.html", username=session['username'])
 
 
-#-------------------------------------------------------------------
+# -------------------------------------------------------------------
 
-#--------------------------BASE PAGES-------------------------------
+# --------------------------BASE PAGES-------------------------------
 @app.route('/home')
 @app.route('/')
 def home():
-    return render_template('index.html')
-
+    return render_template('farm_main.html')
 
 
 if __name__ == "__main__":

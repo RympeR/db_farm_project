@@ -1,7 +1,7 @@
 {% extends 'basics.html' %} {% block style %}
 <link
 	rel="stylesheet"
-	href="{{ url_for('static',filename='css/Delete_Service.css') }}"
+	href="{{ url_for('static',filename='css/About_Client.css') }}"
 />
 <link
 	href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap"
@@ -13,7 +13,7 @@
 	<div class="container">
 		<img src="{{ url_for('static',filename='imgs/Service.jpg') }}" />
 		<form method="post">
-            <div class="dws-input">
+			<div class="dws-input">
 				<input type="text" name="sub_id" placeholder="Номер:" />
 			</div>
 			<div class="dws-input">
@@ -29,7 +29,11 @@
 				<input type="text" name="surname" placeholder="Фамилия:" />
 			</div>
 			<div class="dws-input">
-				<input type="text" name="quantity" placeholder="Кол-во произведенного:" />
+				<input
+					type="text"
+					name="quantity"
+					placeholder="Кол-во произведенного:"
+				/>
 			</div>
 			<button
 				class="dws-submit2"

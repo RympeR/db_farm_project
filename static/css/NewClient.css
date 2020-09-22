@@ -1,9 +1,3 @@
-h1{
-    font-size: 80px;
-    text-align: center;
-    font-family: 'mr_KindlyJasmineG', cursive;
-    font-weight: bold;
-}
 .intro{
     display: flex;
     flex-direction: column;

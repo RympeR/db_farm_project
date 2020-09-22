@@ -10,7 +10,7 @@
 {% endblock %} {% block title %}Statistics {% endblock %} {% block body %}
 <div class="intro">
 	<h1>Редактирование персонала</h1>
-	<div class="container">
+	<div class="container" style="height: 1050px;">
 		<img src="{{ url_for('static',filename='imgs/Service.jpg') }}" />
 		<form method="post">
 			<div class="dws-input">
@@ -55,12 +55,6 @@
 			</div>
 			<div class="dws-input">
 				<input type="text" name="adres" placeholder="Адрес:" />
-			</div>
-			<div class="dws-input">
-				<input type="checkbutton" name="milk" placeholder="Молоко:" />
-			</div>
-			<div class="dws-input">
-				<input type="checkbutton" name="cheese" placeholder="Сыр:" />
 			</div>
 			<br />
 			<br />

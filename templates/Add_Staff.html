@@ -8,7 +8,7 @@
 {% block body %}
     <div class = "intro">
         <h1>Добавить сотрудника</h1>
-<div class = "container">
+<div class = "container" style="height: 1000px;">
     <img src = "{{ url_for('static',filename='imgs/Add_Staff.jpg') }}">
     <form method = "post">
         <div class = "dws-input">
@@ -35,15 +35,10 @@
         <div class = "dws-input">
         <input type = "text" name = "adres" placeholder = "Адрес:">
         </div>
-        <div class = "dws-input">
-        <input type = "checkbutton" name = "milk" placeholder = "Молоко:">
-        </div>
-        <div class = "dws-input">
-        <input type = "checkbutton" name = "cheese" placeholder = "Сыр:">
-        </div>
+      
         <br />
         <br />
-        <button class = "dws-submit2"  type = "submit" name = "submit" value = "Report">Добавить сотрудника</button>
+        <button class = "dws-submit2" style="color:rgb(0,0,0);"  type = "submit" name = "submit" value = "Report">Добавить сотрудника</button>
         <br />
         <br />
         <br />

@@ -30,11 +30,11 @@
 					placeholder="Введите пароль"
 				/>
 			</div>
-			<br />
 			{% for msg in get_flashed_messages() %}
-			<div class="error_input">{{msg}}</div>
+			<div class="error_input" style="color:rgb(255,255,255)">{{msg}}</div>
 			{% endfor %}
 			<button
+				style="margin-top:30px; color:rgb(0,0,0)"
 				class="dws-submit"
 				type="submit"
 				name="submit"

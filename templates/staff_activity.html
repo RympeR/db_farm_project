@@ -1,25 +1,34 @@
-
-    {% extends 'basics.html' %}
-
-    {% block style %}
-    <link rel = "stylesheet" href = "{{ url_for('static',filename='css/Delete_Service.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
-    {% endblock %}
-{% block title %}Statistics    {% endblock %}
-{% block body %}
-    <div class = "intro">
-        <h1>Посмотреть стоимость</h1>
-<div class = "container">
-    <img src = "{{ url_for('static',filename='imgs/Service.jpg') }}">
-    <form method="post">
-        <div class = "dws-input">
-        <input type = "text" name = "name" placeholder = "Название услуги:">
-        </div>
-        <button class = "dws-submit2" type = "submit" name = "submit" value = "Report">Обновить список услуг</button>
-        <br />
-        <br />
-        <br />
-        <a class = "restore" href = "/client/{{username}}">Назад</a>
-    </form>
+{% extends 'basics.html' %} {% block style %}
+<link
+	rel="stylesheet"
+	href="{{ url_for('static',filename='css/Delete_Service.css') }}"
+/>
+<link
+	href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap"
+	rel="stylesheet"
+/>
+{% endblock %} {% block title %}РђРєС‚РёРІРЅРѕСЃС‚СЊ СЃРѕС‚СЂСѓРґРЅРёРєР°{% endblock %} {% block
+body %}
+<div class="intro">
+	<h1>РђРєС‚РёРІРЅРѕСЃС‚СЊ СЃРѕС‚СЂСѓРґРЅРёРєР°</h1>
+	<div class="container">
+		<img src="{{ url_for('static',filename='imgs/Service.jpg') }}" />
+		<form method="post">
+			<div class="dws-input">
+				<input type="text" name="number" placeholder="РќРѕРјРµСЂ СЃРѕС‚СЂСѓРґРЅРёРєР°:" />
+			</div>
+			<button
+				class="dws-submit2"
+				type="submit"
+				name="submit"
+				value="Report">
+				РџСЂРѕРІРµСЂРёС‚СЊ РєС‚РёРІРЅРѕСЃС‚СЊ СЃРѕС‚СЂСѓРґРЅРёРєР°
+			</button>
+			<br />
+			<br />
+			<br />
+			<a class="restore" href="/client/{{username}}">РќР°Р·Р°Рґ</a>
+		</form>
+	</div>
 </div>
-</div>    {% endblock %}
+{% endblock %}

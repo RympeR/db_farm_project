@@ -7,22 +7,24 @@
 	href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap"
 	rel="stylesheet"
 />
-{% endblock %} {% block title %}Удаление подразделения{% endblock %} {% block body %}
+{% endblock %} {% block title %}Statistics {% endblock %} {% block body %}
 <div class="intro">
-	<h1>Удаление подразделения</h1>
+	<h1>Расходы продукции</h1>
 	<div class="container">
 		<img src="{{ url_for('static',filename='imgs/Service.jpg') }}" />
 		<form method="post">
 			<div class="dws-input">
-				<input type="text" name="sub_id" placeholder="Номер отдела:" />
+				<input type="text" name="date_begin" placeholder="Дата начала:" />
+			</div>
+			<div class="dws-input">
+				<input type="text" name="date_end" placeholder="Дата конца:" />
 			</div>
 			<button
 				class="dws-submit2"
 				type="submit"
 				name="submit"
-				value="Report"
-			>
-				Удаление подразделения
+				value="Report">
+				Расходы продукции
 			</button>
 			<br />
 			<br />

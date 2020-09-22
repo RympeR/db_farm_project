@@ -1,25 +1,85 @@
-
-    {% extends 'basics.html' %}
-
-    {% block style %}
-    <link rel = "stylesheet" href = "{{ url_for('static',filename='css/Delete_Service.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
-    {% endblock %}
-{% block title %}Statistics    {% endblock %}
+{% extends 'basics.html' %} 
+{% block style %}
+<link
+	rel="stylesheet"
+	href="{{ url_for('static',filename='css/Delete_Service.css') }}"
+/>
+<link
+	href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap"
+	rel="stylesheet"
+/>
+{% endblock %} 
+{% block title %}Statistics {% endblock %} 
 {% block body %}
-    <div class = "intro">
-        <h1>���������� ���������</h1>
-<div class = "container">
-    <img src = "{{ url_for('static',filename='imgs/Service.jpg') }}">
-    <form method="post">
-        <div class = "dws-input">
-        <input type = "text" name = "name" placeholder = "�������� ������:">
-        </div>
-        <button class = "dws-submit2" type = "submit" name = "submit" value = "Report">�������� ������ �����</button>
-        <br />
-        <br />
-        <br />
-        <a class = "restore" href = "/client/{{username}}">�����</a>
-    </form>
+<div class="intro">
+	<h1>Редактирование персонала</h1>
+	<div class="container">
+		<img src="{{ url_for('static',filename='imgs/Service.jpg') }}" />
+		<form method="post">
+			<div class="dws-input">
+				<input
+					type="text"
+					name="staff_id"
+					placeholder="Номер сотрудника:"
+				/>
+			</div>
+			<div class="dws-input">
+				<input type="text" name="name_login" placeholder="Имя:" />
+			</div>
+			<div class="dws-input">
+				<input type="text" name="surname" placeholder="Фамилия:" />
+			</div>
+			<div class="dws-input">
+				<input type="text" name="telephone" placeholder="Телефон:" />
+			</div>
+			<div class="dws-input">
+				<input
+					type="text"
+					name="position"
+					placeholder="Должность сотрудника:"
+				/>
+			</div>
+			<div class="dws-input">
+				<input type="text" name="salary" placeholder="Зарплата:" />
+			</div>
+			<div class="dws-input">
+				<input
+					type="text"
+					name="quantity"
+					placeholder="Кол-во сделанного товара:"
+				/>
+			</div>
+			<div class="dws-input">
+				<input
+					type="text"
+					name="subdivision"
+					placeholder="Номер отделения:"
+				/>
+			</div>
+			<div class="dws-input">
+				<input type="text" name="adres" placeholder="Адрес:" />
+			</div>
+			<div class="dws-input">
+				<input type="checkbutton" name="milk" placeholder="Молоко:" />
+			</div>
+			<div class="dws-input">
+				<input type="checkbutton" name="cheese" placeholder="Сыр:" />
+			</div>
+			<br />
+			<br />
+			<button
+				class="dws-submit2"
+				type="submit"
+				name="submit"
+				value="Report"
+			>
+				Добавить сотрудника
+			</button>
+			<br />
+			<br />
+			<br />
+			<a class="restore" href="/client/{{username}}">�����</a>
+		</form>
+	</div>
 </div>
-</div>    {% endblock %}
+{% endblock %}

@@ -34,7 +34,7 @@ def execute_query(user, password, query):
 def loadSession(role):
     engine = create_engine(
         f'postgres+psycopg2://{role}@localhost:5432/farm', convert_unicode=True)
-    #metadata = MetaData()
+    # metadata = MetaData()
     db_session = scoped_session(sessionmaker(
         autocommit=False,  autoflush=False, bind=engine))
     metadata = db.metadata
@@ -172,20 +172,22 @@ def directoraddstaff(username):
         shutdown_session()
     except Exception as e:
         pass
+
     if request.method == 'POST':
         username = request.form["name_login"]
         surname = request.form['surname']
-        lastname = request.form['patronomyc']
         telephone = request.form['telephone']
-        position = request.form["position"]
-        service = request.form["service"]
-        service_type = request.form["service_type"]
-        login_ = request.form["login"]
-        password = request.form["passw"]
+        salary = request.form['salary']
+        quantity = request.form['quantity']
+        subdivision = request.form['subdivision']
+        adres = request.form['adres']
+        milk = request.form['milk']
+        cheese = request.form['cheese']
+        position = request.form['position']
 
         session_ = loadSession('director:123')
         query = f"""select * from addnewstaff(
-                '{username}', '{surname}', 
+                '{username}', '{surname}',
                 '{lastname}', '{telephone}',
                 '{login_}', '{password}',
                 '{service}', '{service_type}',
@@ -212,19 +214,21 @@ def directorupdatestaff(username):
     except Exception as e:
         pass
     if request.method == 'POST':
+        staff_id = request.form["staff_id"]
         username = request.form["name_login"]
         surname = request.form['surname']
-        lastname = request.form['patronomyc']
         telephone = request.form['telephone']
-        position = request.form["position"]
-        service = request.form["service"]
-        service_type = request.form["service_type"]
-        login_ = request.form["login"]
-        password = request.form["passw"]
+        salary = request.form['salary']
+        quantity = request.form['quantity']
+        subdivision = request.form['subdivision']
+        adres = request.form['adres']
+        milk = request.form['milk']
+        cheese = request.form['cheese']
+        position = request.form['position']
 
         session_ = loadSession('director:123')
         query = f"""select * from addnewstaff(
-                '{username}', '{surname}', 
+                '{username}', '{surname}',
                 '{lastname}', '{telephone}',
                 '{login_}', '{password}',
                 '{service}', '{service_type}',
@@ -251,7 +255,8 @@ def directoraddstaffres(username):
         print(role)
         session_ = loadSession(role)
         data_staff_res = session_.execute("""select name_staff, surname_staff, patronomyc_staff, mobile_telephone_staff,
-                                array_agg(coalesce(specialization_service, '')), array_agg(coalesce(type_service, '')),
+                                array_agg(coalesce(specialization_service, '')), array_agg(
+                                    coalesce(type_service, '')),
                                             role_name from staff
                                     full join service on id_service = service_id
                                     full join roles on role_to_login = id_role
@@ -265,11 +270,9 @@ def directordelete(username):
     if 'username' not in session or session['username'] != username:
         abort(401)
     if request.method == 'POST':
-        name = request.form['name']
-        surname = request.form['surname']
-        lastname = request.form['patronomyc']
+        number = request.form['number']]
 
-        #session_ = loadSession('director:123')
+        # session_ = loadSession('director:123')
         query = f"""select * from deletestaff(
             '{name}', '{surname}', '{lastname}');"""
         try:
@@ -291,7 +294,7 @@ def director_check_clients(username):
         surname = request.form['surname']
         lastname = request.form['patronomyc']
 
-        #session_ = loadSession('director:123')
+        # session_ = loadSession('director:123')
         query = f"""select * from deletestaff(
             '{name}', '{surname}', '{lastname}');"""
         try:
@@ -303,16 +306,34 @@ def director_check_clients(username):
 
     return render_template("check_clients.html", username=session['username'])
 
+@app.route('/director/spent_products/<username>', methods=('POST', 'GET'))
+def director_spent_products(username):
+    if 'username' not in session or session['username'] != username:
+        abort(401)
+    if request.method == 'POST':
+        date_begin = request.form['date_begin']
+        date_end = request.form['date_end']
+
+        # session_ = loadSession('director:123')
+        query = f"""select * from deletestaff(
+            '{name}', '{surname}', '{lastname}');"""
+        try:
+            execute_query('director', '123', query)
+            return redirect(url_for('directoraddstaffres', username=session['username']))
+        except Exception as e:
+            shutdown_session()
+            return render_template("spent_products.html", username=session['username'])
+
+    return render_template("spent_products.html", username=session['username'])
+
 @app.route('/director/check_products/<username>', methods=('POST', 'GET'))
 def director_check_products(username):
     if 'username' not in session or session['username'] != username:
         abort(401)
     if request.method == 'POST':
         name = request.form['name']
-        surname = request.form['surname']
-        lastname = request.form['patronomyc']
 
-        #session_ = loadSession('director:123')
+        # session_ = loadSession('director:123')
         query = f"""select * from deletestaff(
             '{name}', '{surname}', '{lastname}');"""
         try:
@@ -329,11 +350,9 @@ def director_staff_activity(username):
     if 'username' not in session or session['username'] != username:
         abort(401)
     if request.method == 'POST':
-        name = request.form['name']
-        surname = request.form['surname']
-        lastname = request.form['patronomyc']
+        name = request.form['number']
 
-        #session_ = loadSession('director:123')
+        # session_ = loadSession('director:123')
         query = f"""select * from deletestaff(
             '{name}', '{surname}', '{lastname}');"""
         try:
@@ -350,11 +369,9 @@ def director_subdiv_activity(username):
     if 'username' not in session or session['username'] != username:
         abort(401)
     if request.method == 'POST':
-        name = request.form['name']
-        surname = request.form['surname']
-        lastname = request.form['patronomyc']
+        adres = request.form['adres']
 
-        #session_ = loadSession('director:123')
+        # session_ = loadSession('director:123')
         query = f"""select * from deletestaff(
             '{name}', '{surname}', '{lastname}');"""
         try:
@@ -376,19 +393,16 @@ def directoraddsubdiv(username):
     except Exception as e:
         pass
     if request.method == 'POST':
-        username = request.form["name_login"]
-        surname = request.form['surname']
-        lastname = request.form['patronomyc']
-        telephone = request.form['telephone']
-        position = request.form["position"]
-        service = request.form["service"]
-        service_type = request.form["service_type"]
-        login_ = request.form["login"]
-        password = request.form["passw"]
+        adres = request.form["adres"]
+        city = request.form["city"]
+        name = request.form["name"]
+        surname = request.form["surname"]
+        quantity = request.form["quantity"]
+        
 
         session_ = loadSession('director:123')
         query = f"""select * from addnewstaff(
-                '{username}', '{surname}', 
+                '{username}', '{surname}',
                 '{lastname}', '{telephone}',
                 '{login_}', '{password}',
                 '{service}', '{service_type}',
@@ -413,19 +427,16 @@ def directorupdatesubdiv(username):
     except Exception as e:
         pass
     if request.method == 'POST':
-        username = request.form["name_login"]
-        surname = request.form['surname']
-        lastname = request.form['patronomyc']
-        telephone = request.form['telephone']
-        position = request.form["position"]
-        service = request.form["service"]
-        service_type = request.form["service_type"]
-        login_ = request.form["login"]
-        password = request.form["passw"]
+        sub_id = request.form["sub_id"]
+        adres = request.form["adres"]
+        city = request.form["city"]
+        name = request.form["name"]
+        surname = request.form["surname"]
+        quantity = request.form["quantity"]
 
         session_ = loadSession('director:123')
         query = f"""select * from addnewstaff(
-                '{username}', '{surname}', 
+                '{username}', '{surname}',
                 '{lastname}', '{telephone}',
                 '{login_}', '{password}',
                 '{service}', '{service_type}',
@@ -450,19 +461,11 @@ def directordeletesubdiv(username):
     except Exception as e:
         pass
     if request.method == 'POST':
-        username = request.form["name_login"]
-        surname = request.form['surname']
-        lastname = request.form['patronomyc']
-        telephone = request.form['telephone']
-        position = request.form["position"]
-        service = request.form["service"]
-        service_type = request.form["service_type"]
-        login_ = request.form["login"]
-        password = request.form["passw"]
+        sub_id = request.form["sub_id"]
 
         session_ = loadSession('director:123')
         query = f"""select * from addnewstaff(
-                '{username}', '{surname}', 
+                '{username}', '{surname}',
                 '{lastname}', '{telephone}',
                 '{login_}', '{password}',
                 '{service}', '{service_type}',
@@ -488,19 +491,12 @@ def directorupdatesalary(username):
     except Exception as e:
         pass
     if request.method == 'POST':
-        username = request.form["name_login"]
-        surname = request.form['surname']
-        lastname = request.form['patronomyc']
-        telephone = request.form['telephone']
-        position = request.form["position"]
-        service = request.form["service"]
-        service_type = request.form["service_type"]
-        login_ = request.form["login"]
-        password = request.form["passw"]
+        number = request.form["number"]
+        salary = request.form['salary']
 
         session_ = loadSession('director:123')
         query = f"""select * from addnewstaff(
-                '{username}', '{surname}', 
+                '{username}', '{surname}',
                 '{lastname}', '{telephone}',
                 '{login_}', '{password}',
                 '{service}', '{service_type}',
@@ -540,7 +536,7 @@ def client_check_payment(username):
         first_date = request.form['first_date']
         last_date = request.form['last_date']
         session_ = loadSession('client:client')
-        query = f"""SELECT product_id, product_name, product_type, subdivision_id, 
+        query= f"""SELECT product_id, product_name, product_type, subdivision_id,
                             product.product_price, quanity_of_produced
                         from client
                             JOIN order_ USING(client_id)
@@ -592,7 +588,7 @@ def check_cost(username, product_name):
                         WHERE product_name = '{product_name}'""")
         except Exception as identifier:
             pass
-    return render_template('cost.html', data=data, username=session['username'])
+    return render_template('cost.html', data = data, username = session['username'])
 
 # -------------------------------------------------------------------
 
@@ -602,96 +598,96 @@ def admin(username):
     if 'username' not in session or session['username'] != username:
         abort(401)
 
-    session_ = loadSession('admin:admin')
-    data1 = session_.execute(f"SELECT * from staff WHERE login='{username}';")
-    data1 = data1.first()
-    return render_template('Admin.html', dirstaff=data1, username=session['username'])
+    session_=loadSession('admin:admin')
+    data1=session_.execute(f"SELECT * from staff WHERE login='{username}';")
+    data1=data1.first()
+    return render_template('Admin.html', dirstaff = data1, username = session['username'])
 
 
-@app.route('/staff/addclient/<username>', methods=['POST', 'GET'])
+@app.route('/staff/addclient/<username>', methods = ['POST', 'GET'])
 def adminaddnewclient(username):
     if 'username' not in session or session['username'] != username:
         abort(401)
     if request.method == 'POST':
-        name = request.form['name']
-        surname = request.form['surname']
-        lastname = request.form['lastname']
-        phone = request.form['telephone']
+        name=request.form['name']
+        surname=request.form['surname']
+        lastname=request.form['lastname']
+        phone=request.form['telephone']
         try:
-            query = f"SELECT * FROM addnewclient('{name}', '{surname}', '{lastname}', '{phone}');"
+            query=f"SELECT * FROM addnewclient('{name}', '{surname}', '{lastname}', '{phone}');"
             execute_query('admin', 'admin', query)
             return redirect(url_for('admin', username=session['username']))
         except Exception as e:
-            return render_template("Add_Client.html", username=session['username'])
-    return render_template("Add_Client.html", username=session['username'])
+            return render_template("Add_Client.html", username = session['username'])
+    return render_template("Add_Client.html", username = session['username'])
 
-@app.route('/staff/updateclient/<username>', methods=['POST', 'GET'])
+@app.route('/staff/updateclient/<username>', methods = ['POST', 'GET'])
 def adminupdateclient(username):
     if 'username' not in session or session['username'] != username:
         abort(401)
     if request.method == 'POST':
-        name = request.form['name']
-        surname = request.form['surname']
-        lastname = request.form['lastname']
-        phone = request.form['telephone']
+        name=request.form['name']
+        surname=request.form['surname']
+        lastname=request.form['lastname']
+        phone=request.form['telephone']
         try:
-            query = f"SELECT * FROM addnewclient('{name}', '{surname}', '{lastname}', '{phone}');"
+            query=f"SELECT * FROM addnewclient('{name}', '{surname}', '{lastname}', '{phone}');"
             execute_query('admin', 'admin', query)
             return redirect(url_for('admin', username=session['username']))
         except Exception as e:
-            return render_template("updateclient.html", username=session['username'])
-    return render_template("updateclient.html", username=session['username'])
+            return render_template("updateclient.html", username = session['username'])
+    return render_template("updateclient.html", username = session['username'])
 
-@app.route('/staff/checkproduct/<username>', methods=['POST', 'GET'])
+@app.route('/staff/checkproduct/<username>', methods = ['POST', 'GET'])
 def admincheckproduct(username):
     if 'username' not in session or session['username'] != username:
         abort(401)
     if request.method == 'POST':
-        name = request.form['name']
-        surname = request.form['surname']
-        lastname = request.form['lastname']
-        phone = request.form['telephone']
+        name=request.form['name']
+        surname=request.form['surname']
+        lastname=request.form['lastname']
+        phone=request.form['telephone']
         try:
-            query = f"SELECT * FROM addnewclient('{name}', '{surname}', '{lastname}', '{phone}');"
+            query=f"SELECT * FROM addnewclient('{name}', '{surname}', '{lastname}', '{phone}');"
             execute_query('admin', 'admin', query)
             return redirect(url_for('admin', username=session['username']))
         except Exception as e:
-            return render_template("checkproduct.html", username=session['username'])
-    return render_template("checkproduct.html", username=session['username'])
+            return render_template("checkproduct.html", username = session['username'])
+    return render_template("checkproduct.html", username = session['username'])
 
-@app.route('/staff/checkclient/<username>', methods=['POST', 'GET'])
+@app.route('/staff/checkclient/<username>', methods = ['POST', 'GET'])
 def admincheckclient(username):
     if 'username' not in session or session['username'] != username:
         abort(401)
     if request.method == 'POST':
-        name = request.form['name']
-        surname = request.form['surname']
-        lastname = request.form['lastname']
-        phone = request.form['telephone']
+        name=request.form['name']
+        surname=request.form['surname']
+        lastname=request.form['lastname']
+        phone=request.form['telephone']
         try:
-            query = f"SELECT * FROM addnewclient('{name}', '{surname}', '{lastname}', '{phone}');"
+            query=f"SELECT * FROM addnewclient('{name}', '{surname}', '{lastname}', '{phone}');"
             execute_query('admin', 'admin', query)
             return redirect(url_for('admin', username=session['username']))
         except Exception as e:
-            return render_template("checkclient.html", username=session['username'])
-    return render_template("checkclient.html", username=session['username'])
+            return render_template("checkclient.html", username = session['username'])
+    return render_template("checkclient.html", username = session['username'])
 
-@app.route('/staff/sold_product/<username>', methods=['POST', 'GET'])
+@app.route('/staff/sold_product/<username>', methods = ['POST', 'GET'])
 def adminsold_product(username):
     if 'username' not in session or session['username'] != username:
         abort(401)
     if request.method == 'POST':
-        name = request.form['name']
-        surname = request.form['surname']
-        lastname = request.form['lastname']
-        phone = request.form['telephone']
+        name=request.form['name']
+        surname=request.form['surname']
+        lastname=request.form['lastname']
+        phone=request.form['telephone']
         try:
-            query = f"SELECT * FROM addnewclient('{name}', '{surname}', '{lastname}', '{phone}');"
+            query=f"SELECT * FROM addnewclient('{name}', '{surname}', '{lastname}', '{phone}');"
             execute_query('admin', 'admin', query)
             return redirect(url_for('admin', username=session['username']))
         except Exception as e:
-            return render_template("sold_product.html", username=session['username'])
-    return render_template("sold_product.html", username=session['username'])
+            return render_template("sold_product.html", username = session['username'])
+    return render_template("sold_product.html", username = session['username'])
 
 # -------------------------------------------------------------------
 
@@ -703,4 +699,4 @@ def home():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug = True)

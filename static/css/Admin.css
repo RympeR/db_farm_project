@@ -35,19 +35,17 @@ input[type="name"], input[type="surname"], input[type="patronomyc"], input[type=
 .dws-submit{
     padding: 13px 30px;
     margin: 10px 0 20px 0;
+    margin-top: 4em;
     font-size: 40px;
     color: #fff;
-    background-color: #2ca8c6;
     border: none;
-    border-bottom: 4px solid #6ee9fd;
     cursor: pointer;
-    font-family: 'mr_KindlyJasmineG', cursive;
     text-decoration: none;
 }
 .dws-submit:hover{
     transition: all 0.5s;
     background: #fff;
-    color: #2c536c;
+    color: #726ca3;
 }
 .container{
     width: 450px;
@@ -142,16 +140,11 @@ h4{
 }
 .dws-submit2{
     padding: 13px 40px;
-    /*margin: 10px 0 20px 0;*/
-    font-size: 40px;
+    font-size: 25px;
     color: #fff;
-    background-color: rgb(42, 140, 160);
     border: none;
-    border-bottom: 4px solid #6ee9fd;
     cursor: pointer;
-    font-family: 'mr_KindlyJasmineG', cursive;
     text-decoration: none;
-    /*margin-top: -40px;*/
 }
 .dws-submit2:hover{
     transition: all 0.5s;
@@ -179,14 +172,12 @@ p{
     color: #fff;
 }
 .dws-submit3{
-    padding: 13px 40px;
+    padding: 13px 30px;
     margin: 10px 0 20px 0;
+    margin-top: 4em;
     font-size: 40px;
     color: #fff;
-    background-color: rgb(42, 140, 160);
     border: none;
-    border-bottom: 4px solid #6ee9fd;
     cursor: pointer;
-    font-family: 'mr_KindlyJasmineG', cursive;
     text-decoration: none;
 }

@@ -290,29 +290,9 @@ def directordelete(username):
     return render_template("Delete.html", username=session['username'])
 
 
-@app.route('/director/check_clients/<username>', methods=('POST', 'GET'))
-def director_check_clients(username):
-    if 'username' not in session or session['username'] != username:
-        abort(401)
-    if request.method == 'POST':
-        name = request.form['name']
-        surname = request.form['surname']
-        lastname = request.form['patronomyc']
-
-        # session_ = loadSession('farm_director:director')
-        query = ""
-
-        try:
-            execute_query('farm_director', 'director', query)
-            return redirect(url_for('directoraddstaffres', username=session['username']))
-        except Exception as e:
-            # return render_template('Add_Staff.html')
-            return render_template("check_clients.html", username=session['username'])
-
-    return render_template("check_clients.html", username=session['username'])
 
 
-@app.route('/director/spent_products/<username>', methods=('POST', 'GET'))
+@app.route('/director/check_products_spent/<username>', methods=('POST', 'GET'))
 def director_spent_products(username):
     if 'username' not in session or session['username'] != username:
         abort(401)
@@ -578,7 +558,7 @@ def check_cost(username, product_name):
 # -------------------------------------------------------------------
 
 # --------------------------STAFF PAGES------------------------------
-@app.route('/staff/<username>')
+@app.route('/admin/<username>')
 def admin(username):
     if 'username' not in session or session['username'] != username:
         abort(401)
@@ -586,10 +566,11 @@ def admin(username):
     session_ = loadSession('farm_staff:staff')
     data1 = session_.execute(f"SELECT * from staff  WHERE login='{username}';")
     data1 = data1.first()
+    print(data1)
     return render_template('Admin.html', dirstaff=data1, username=session['username'])
 
 
-@app.route('/staff/addclient/<username>', methods=['POST', 'GET'])
+@app.route('/admin/addclient/<username>', methods=['POST', 'GET'])
 def adminaddnewclient(username):
     if 'username' not in session or session['username'] != username:
         abort(401)
@@ -609,7 +590,7 @@ def adminaddnewclient(username):
     return render_template("Add_Client.html", username=session['username'])
 
 
-@app.route('/staff/updateclient/<username>', methods=['POST', 'GET'])
+@app.route('/admin/updateclient/<username>', methods=['POST', 'GET'])
 def adminupdateclient(username):
     if 'username' not in session or session['username'] != username:
         abort(401)
@@ -627,7 +608,7 @@ def adminupdateclient(username):
     return render_template("updateclient.html", username=session['username'])
 
 
-@app.route('/staff/checkproduct/<username>', methods=['POST', 'GET'])
+@app.route('/admin/checkproduct/<username>', methods=['POST', 'GET'])
 def admincheckproduct(username):
     if 'username' not in session or session['username'] != username:
         abort(401)
@@ -644,7 +625,7 @@ def admincheckproduct(username):
     return render_template("checkproduct.html", username=session['username'])
 
 
-@app.route('/staff/checkclient/<username>', methods=['POST', 'GET'])
+@app.route('/admin/checkclient/<username>', methods=['POST', 'GET'])
 def admincheckclient(username):
     if 'username' not in session or session['username'] != username:
         abort(401)
@@ -662,7 +643,7 @@ def admincheckclient(username):
     return render_template("checkclient.html", username=session['username'])
 
 
-@app.route('/staff/sold_product/<username>', methods=['POST', 'GET'])
+@app.route('/admin/sold_product/<username>', methods=['POST', 'GET'])
 def adminsold_product(username):
     if 'username' not in session or session['username'] != username:
         abort(401)

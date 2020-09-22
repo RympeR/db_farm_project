@@ -48,10 +48,12 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE
 	public.client,
 	public.order_,
 	public.supply,
-	public.product
+	public.product,
 	TO farm_staff;
+
 GRANT SELECT ON TABLE
 	public.subdivision, 
-	public.order_resource
+	public.order_resource,
+	public.staff
 	TO farm_staff; 
 

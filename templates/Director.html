@@ -9,38 +9,46 @@
 />
 {% endblock %} {% block title %}Director{% endblock %} {% block body %}
 <div class="intro">
-	<h1>Директор</h1>
+	<h1>{{dirstaff[1] + ' ' + dirstaff[2]}}</h1>
 </div>
 <div class="intro2">
 	<div class="section_header">
 		<h3 class="section_suptitle">Добро пожаловать в личный кабинет</h3>
 	</div>
 	<div class="container">
-		<img src="{{ url_for('static',filename='imgs/moya.jpg') }}" />
 		<form method="GET">
 			<div class="dws-input">
 				<input
+					style="background-color:white;
+							margin-top: 4em"
+					disabled
 					type="name"
 					name="name"
-					placeholder="{{dirstaff.name_staff}}"/>
+					placeholder="{{dirstaff[1]}}"/>
 			</div>
 			<div class="dws-input">
 				<input
+					style="background-color:white;"
+					disabled
 					type="surname"
 					name="surname"
-					placeholder="{{dirstaff.surname_staff}}"/>
+					placeholder="{{dirstaff[2]}}"/>
 			</div>
 			<div class="dws-input">
 				<input
+					style="background-color:white;"
+					disabled
 					type="patronomyc"
 					name="patronomyc"
-					placeholder="{{dirstaff.patronomyc_staff}}"/>
+					placeholder="{{dirstaff[3]}}"/>
 			</div>
 			<div class="dws-input">
 				<input
+					style="background-color:white;"
+					disabled
 					type="telephone"
 					name="telephone"
-					placeholder="{{dirstaff.mobile_telephone_staff}}"/>
+					placeholder="{{dirstaff[8]}}"/>
 			</div>
 			<br />
 			<a

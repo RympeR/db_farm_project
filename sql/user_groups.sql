@@ -31,18 +31,27 @@ GRANT CONNECT ON DATABASE farm to farm_staff;
 GRANT CONNECT ON DATABASE farm to farm_client;
 GRANT CONNECT ON DATABASE farm to farm_guest;
 
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE users
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE staff
+TO farm_guest;
+
+GRANT SELECT ON TABLE client
 TO farm_guest;
 
 GRANT SELECT, REFERENCES ON TABLE
-	public.groupe,
-	public.staff,
-	public.child,
-	public.paytype,
-	public.payment,
-	public.child_lesson,
-	public.staff_schedule,
-	public.staff_lesson,
-	public.lesson,
-	public.room
-	TO staff;
+	public.client,
+	public.order_,
+	public.supply,
+	public.product
+	TO farm_client;
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE 
+	public.client,
+	public.order_,
+	public.supply,
+	public.product
+	TO farm_staff;
+GRANT SELECT ON TABLE
+	public.subdivision, 
+	public.order_resource
+	TO farm_staff; 
+

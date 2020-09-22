@@ -235,10 +235,10 @@ def directorupdatestaff(username):
             return redirect(url_for('directoraddstaffres', username=session['username']))
         except Exception as e:
             # return render_template('Add_Staff.html')
-            return render_template("Add_Staff.html", username=session['username'])
+            return render_template("update_staff.html", username=session['username'])
 
     else:
-        return render_template("Add_Staff.html", username=session['username'])
+        return render_template("update_staff.html", username=session['username'])
 
 
 @app.route('/director/addstaff_result/<username>', methods=['POST', 'GET'])
@@ -299,9 +299,9 @@ def director_check_clients(username):
             return redirect(url_for('directoraddstaffres', username=session['username']))
         except Exception as e:
             shutdown_session()
-            return render_template("Delete.html", username=session['username'])
+            return render_template("check_clients.html", username=session['username'])
 
-    return render_template("Delete.html", username=session['username'])
+    return render_template("check_clients.html", username=session['username'])
 
 @app.route('/director/check_products/<username>', methods=('POST', 'GET'))
 def director_check_products(username):
@@ -320,9 +320,9 @@ def director_check_products(username):
             return redirect(url_for('directoraddstaffres', username=session['username']))
         except Exception as e:
             shutdown_session()
-            return render_template("Delete.html", username=session['username'])
+            return render_template("check_products.html", username=session['username'])
 
-    return render_template("Delete.html", username=session['username'])
+    return render_template("check_products.html", username=session['username'])
 
 @app.route('/director/staff_activity/<username>', methods=('POST', 'GET'))
 def director_staff_activity(username):
@@ -341,9 +341,9 @@ def director_staff_activity(username):
             return redirect(url_for('directoraddstaffres', username=session['username']))
         except Exception as e:
             shutdown_session()
-            return render_template("Delete.html", username=session['username'])
+            return render_template("staff_activity.html", username=session['username'])
 
-    return render_template("Delete.html", username=session['username'])
+    return render_template("staff_activity.html", username=session['username'])
 
 @app.route('/director/subdiv_activity/<username>', methods=('POST', 'GET'))
 def director_subdiv_activity(username):
@@ -362,9 +362,9 @@ def director_subdiv_activity(username):
             return redirect(url_for('directoraddstaffres', username=session['username']))
         except Exception as e:
             shutdown_session()
-            return render_template("Delete.html", username=session['username'])
+            return render_template("subdiv_activity.html", username=session['username'])
 
-    return render_template("Delete.html", username=session['username'])
+    return render_template("subdiv_activity.html", username=session['username'])
 
 
 @app.route('/director/addsubdiv/<username>', methods=['POST', 'GET'])
@@ -399,10 +399,10 @@ def directoraddsubdiv(username):
             return redirect(url_for('directoraddstaffres', username=session['username']))
         except Exception as e:
             # return render_template('Add_Staff.html')
-            return render_template("Add_Staff.html", username=session['username'])
+            return render_template("addsubdiv.html", username=session['username'])
 
     else:
-        return render_template("Add_Staff.html", username=session['username'])
+        return render_template("addsubdiv.html", username=session['username'])
 
 @app.route('/director/updatesubdiv/<username>', methods=['POST', 'GET'])
 def directorupdatesubdiv(username):
@@ -436,10 +436,10 @@ def directorupdatesubdiv(username):
             return redirect(url_for('directoraddstaffres', username=session['username']))
         except Exception as e:
             # return render_template('Add_Staff.html')
-            return render_template("Add_Staff.html", username=session['username'])
+            return render_template("updatesubdiv.html", username=session['username'])
 
     else:
-        return render_template("Add_Staff.html", username=session['username'])
+        return render_template("updatesubdiv.html", username=session['username'])
 
 @app.route('/director/deletesubdiv/<username>', methods=['POST', 'GET'])
 def directordeletesubdiv(username):
@@ -473,10 +473,10 @@ def directordeletesubdiv(username):
             return redirect(url_for('directoraddstaffres', username=session['username']))
         except Exception as e:
             # return render_template('Add_Staff.html')
-            return render_template("Add_Staff.html", username=session['username'])
+            return render_template("deletesubdiv.html", username=session['username'])
 
     else:
-        return render_template("Add_Staff.html", username=session['username'])
+        return render_template("deletesubdiv.html", username=session['username'])
 
 
 @app.route('/director/updatesalary/<username>', methods=['POST', 'GET'])
@@ -511,10 +511,10 @@ def directorupdatesalary(username):
             return redirect(url_for('directoraddstaffres', username=session['username']))
         except Exception as e:
             # return render_template('Add_Staff.html')
-            return render_template("Add_Staff.html", username=session['username'])
+            return render_template("updatesalary.html", username=session['username'])
 
     else:
-        return render_template("Add_Staff.html", username=session['username'])
+        return render_template("updatesalary.html", username=session['username'])
 
 
 # -------------------------------------------------------------------
@@ -528,7 +528,7 @@ def client(username):
     session_ = loadSession('client:client')
     data1 = session_.execute(f"SELECT * from staff WHERE login='{username}';")
     data1 = data1.first()
-    return render_template('client_func.html', dirstaff=data1, username=session['username'])
+    return render_template('Client.html', dirstaff=data1, username=session['username'])
 
 
 @app.route('/client/check_payment/<username>/<first_date>/<last_date>/', methods=('POST', 'GET'))
@@ -625,6 +625,73 @@ def adminaddnewclient(username):
             return render_template("Add_Client.html", username=session['username'])
     return render_template("Add_Client.html", username=session['username'])
 
+@app.route('/staff/updateclient/<username>', methods=['POST', 'GET'])
+def adminupdateclient(username):
+    if 'username' not in session or session['username'] != username:
+        abort(401)
+    if request.method == 'POST':
+        name = request.form['name']
+        surname = request.form['surname']
+        lastname = request.form['lastname']
+        phone = request.form['telephone']
+        try:
+            query = f"SELECT * FROM addnewclient('{name}', '{surname}', '{lastname}', '{phone}');"
+            execute_query('admin', 'admin', query)
+            return redirect(url_for('admin', username=session['username']))
+        except Exception as e:
+            return render_template("updateclient.html", username=session['username'])
+    return render_template("updateclient.html", username=session['username'])
+
+@app.route('/staff/checkproduct/<username>', methods=['POST', 'GET'])
+def admincheckproduct(username):
+    if 'username' not in session or session['username'] != username:
+        abort(401)
+    if request.method == 'POST':
+        name = request.form['name']
+        surname = request.form['surname']
+        lastname = request.form['lastname']
+        phone = request.form['telephone']
+        try:
+            query = f"SELECT * FROM addnewclient('{name}', '{surname}', '{lastname}', '{phone}');"
+            execute_query('admin', 'admin', query)
+            return redirect(url_for('admin', username=session['username']))
+        except Exception as e:
+            return render_template("checkproduct.html", username=session['username'])
+    return render_template("checkproduct.html", username=session['username'])
+
+@app.route('/staff/checkclient/<username>', methods=['POST', 'GET'])
+def admincheckclient(username):
+    if 'username' not in session or session['username'] != username:
+        abort(401)
+    if request.method == 'POST':
+        name = request.form['name']
+        surname = request.form['surname']
+        lastname = request.form['lastname']
+        phone = request.form['telephone']
+        try:
+            query = f"SELECT * FROM addnewclient('{name}', '{surname}', '{lastname}', '{phone}');"
+            execute_query('admin', 'admin', query)
+            return redirect(url_for('admin', username=session['username']))
+        except Exception as e:
+            return render_template("checkclient.html", username=session['username'])
+    return render_template("checkclient.html", username=session['username'])
+
+@app.route('/staff/sold_product/<username>', methods=['POST', 'GET'])
+def adminsold_product(username):
+    if 'username' not in session or session['username'] != username:
+        abort(401)
+    if request.method == 'POST':
+        name = request.form['name']
+        surname = request.form['surname']
+        lastname = request.form['lastname']
+        phone = request.form['telephone']
+        try:
+            query = f"SELECT * FROM addnewclient('{name}', '{surname}', '{lastname}', '{phone}');"
+            execute_query('admin', 'admin', query)
+            return redirect(url_for('admin', username=session['username']))
+        except Exception as e:
+            return render_template("sold_product.html", username=session['username'])
+    return render_template("sold_product.html", username=session['username'])
 
 # -------------------------------------------------------------------
 

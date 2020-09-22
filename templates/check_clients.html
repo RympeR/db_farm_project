@@ -1,5 +1,5 @@
-{% extends 'basics.html' %}
 
+    {% extends 'basics.html' %}
 
     {% block style %}
     <link rel = "stylesheet" href = "{{ url_for('static',filename='css/Delete_Service.css') }}">
@@ -8,23 +8,18 @@
 {% block title %}Statistics    {% endblock %}
 {% block body %}
     <div class = "intro">
-        <h1>РЈРґР°Р»РёС‚СЊ СѓСЃР»СѓРіСѓ</h1>
+        <h1>Посмотреть стоимость</h1>
 <div class = "container">
     <img src = "{{ url_for('static',filename='imgs/Service.jpg') }}">
     <form method="post">
         <div class = "dws-input">
-        <input type = "text" name = "name" placeholder = "РќР°Р·РІР°РЅРёРµ СѓСЃР»СѓРіРё:">
+        <input type = "text" name = "name" placeholder = "Название услуги:">
         </div>
-        <div class = "dws-input">
-        <input type = "text" name = "type" placeholder = "РўРёРї СѓСЃР»СѓРіРё:">
-        </div>
-        <br />
-        <br />
-        <button class = "dws-submit2" type = "submit" name = "submit" value = "Report">РћР±РЅРѕРІРёС‚СЊ СЃРїРёСЃРѕРє СѓСЃР»СѓРі</button>
+        <button class = "dws-submit2" type = "submit" name = "submit" value = "Report">Обновить список услуг</button>
         <br />
         <br />
         <br />
-        <a class = "restore" href = "/director/{{username}}">РќР°Р·Р°Рґ</a>
+        <a class = "restore" href = "/client/{{username}}">Назад</a>
     </form>
 </div>
 </div>    {% endblock %}

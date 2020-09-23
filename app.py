@@ -6,12 +6,6 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 
 db = SQLAlchemy()
 
-# class DBA:
-#     self.
-#     def __init__():
-#         pass
-
-
 app = Flask(__name__)
 app.secret_key = 'somesecretkeythatonlyishouldknow'
 session_variables = []

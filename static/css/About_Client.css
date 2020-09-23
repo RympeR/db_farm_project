@@ -67,3 +67,9 @@ h1{
   font-family: 'mr_KindlyJasmineG', cursive;
   font-weight: bold;
 }
+.table{
+    justify-content: center;
+    width: 50%;
+    margin-top: 30px;
+    margin-left: 340px;
+}

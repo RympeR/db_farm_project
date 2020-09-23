@@ -31,5 +31,23 @@ body %}
 			<a class="restore" href="/director/{{username}}">Назад</a>
 		</form>
 	</div>
+	{% if data %}
+	<table class="table" border="2">
+		<tr>
+			<th class="text">ФИО шефа</th>
+			<th class="text">Тип товара</th>
+			<th class="text">Колличество продукции</th>
+			<th class="text">Колличество проданного</th>
+		</tr>
+		{% for row in data %}
+		<tr>
+			<th class="text">{{row[0]}}</th>
+			<th class="text">{{row[1]}}</th>
+			<th class="text">{{row[2]}}</th>
+			<th class="text">{{row[3]}}</th>
+		</tr>
+		{% endfor %}
+	</table>
+	{% endif %}
 </div>
 {% endblock %}

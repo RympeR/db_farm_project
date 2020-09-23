@@ -34,10 +34,13 @@ GRANT CONNECT ON DATABASE farm to farm_guest;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE staff
 TO farm_guest;
 
+grant select on client_info to farm_staff;
+
 GRANT SELECT ON TABLE client
 TO farm_guest;
 
 GRANT SELECT, REFERENCES ON TABLE
+	public.subdivision, 
 	public.client,
 	public.order_,
 	public.supply,

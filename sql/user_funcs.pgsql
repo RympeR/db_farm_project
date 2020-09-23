@@ -73,10 +73,10 @@ $$ LANGUAGE plpgsql;
 --добавление клиента в базу
 DROP FUNCTION insert_new_client;
 CREATE OR REPLACE FUNCTION insert_new_client(last_name_client varchar, first_name_client varchar,
-   mobile_number_client varchar, adress_of_client_client varchar) RETURNS INT AS $$
+   mobile_number_client varchar, adress_of_client_client varchar, login_client varchar, passw_client varchar) RETURNS INT AS $$
   
-  INSERT INTO client(last_name, first_name, mobile_number, adress_of_client) VALUES
-      (last_name_client, first_name_client, mobile_number_client, adress_of_client_client);
+  INSERT INTO client(last_name, first_name, mobile_number, adress_of_client, login, passw) VALUES
+      (last_name_client, first_name_client, mobile_number_client, adress_of_client_client, login_client, passw_client);
   SELECT max(client_id)  FROM client;
 $$LANGUAGE sql;
 --редактирование клиента в базе
@@ -134,21 +134,22 @@ select * from sold_product('2019-10-10', '2020-12-20');
 --client
 
 drop FUNCTION if EXISTS client_bought_product;
-CREATE OR REPLACE FUNCTION client_bought_product(begin_date date, end_date date, client_last varchar, client_first varchar) 
+CREATE OR REPLACE FUNCTION client_bought_product(begin_date date, end_date date, c_login varchar) 
 RETURNS TABLE
     (product_id int, product_name varchar, product_type varchar, subdivision_id int, product_price numeric,
         product_count numeric)
 AS $$
-  SELECT product_id, product_name, product_type, subdivision_id, product.product_price, supply.product_count
+  SELECT product.product_id, product.product_name, product.product_type, subdivision.subdivision_id, product.product_price, supply.product_count
   from client
       JOIN order_ USING(client_id)
       JOIN supply USING(order_id)
       JOIN product USING(product_id)
       JOIN subdivision USING(subdivision_id)
-      WHERE client.first_name=client_first and client.last_name=client_last
+      WHERE client.first_name=(select first_name from client where login=c_login) and client.last_name=(select last_name from client where login=c_login)
     and order_.date_ between begin_date and end_date;
-$$ LANGUAGE SQL;
-select * from client_bought_product('2019-10-10', '2020-12-20', 'Попова', 'Инна');
+$$ LANGUAGE sql;
+
+select * from client_bought_product('2019-10-10', '2020-12-20', 'c1');
 
 SELECT subdivision_id, addres, chief_first_name || ' ' || chief_last_name as chief from subdivision
                         where city = '{city}'
@@ -160,10 +161,10 @@ SELECT product_price, quanity_of_produced from product
 
 --director
 
-!!!!
+
 --добавление сотрудника в базу
 INSERT INTO Staff(First_name, Last_name, Phone_number, Work_role, Quantity_of_products_produced, Salary, Subdivision_ID, Adress, cheese_equipment, milk_equipment, login, passw, role_)
- values('','','','','','','','','','', '', '', ''),
+ values('','','','','','','','','','', '', '', '');
 
 --редактирование сотрудника в базе
 UPDATE staff

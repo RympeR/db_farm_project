@@ -31,6 +31,23 @@ def execute_query(user, password, query):
     conn.close()
 
 
+def execute_select_query(user, password, query, f_all=True):
+    conn = psycopg2.connect(
+        host="127.0.0.1",
+        database="farm",
+        user=user,
+        password=password
+    )
+    cursor = conn.cursor()
+    cursor.execute(query)
+    if f_all:
+        data = cursor.fetchall()
+    else:
+        data = cursor.fetchone()
+    conn.close()
+    return data
+
+
 def loadSession(role):
     engine = create_engine(
         f'postgres+psycopg2://{role}@localhost:5432/farm', convert_unicode=True)
@@ -86,7 +103,7 @@ def login():
             session['login'] = 'farm_client'
             role = 'farm_client:client'
             return redirect(url_for('client', username=session['username']))
-            
+
     if request.method == 'POST':
         username = request.form["username"]
         password = request.form['password']
@@ -96,7 +113,7 @@ def login():
         try:
             session['login'] = session_.execute(query).fetchone()[0]
         except Exception as e:
-            
+
             try:
                 query = f"SELECT client_id FROM client WHERE login = '{username}' AND passw = '{password}' ;"
                 print(query)
@@ -191,17 +208,22 @@ def directoraddstaff(username):
     if request.method == 'POST':
         username = request.form["name_login"]
         surname = request.form['surname']
+        work_role = request.form['work_role']
         telephone = request.form['telephone']
         salary = request.form['salary']
         quantity = request.form['quantity']
         subdivision = request.form['subdivision']
         adres = request.form['adres']
-        milk = request.form['milk']
-        cheese = request.form['cheese']
         position = request.form['position']
+        login_ = request.form['login']
+        password = request.form['password']
 
         session_ = loadSession('farm_director:director')
-        query = ""
+        query = f"""            
+                INSERT INTO Staff(First_name, Last_name, Phone_number, Work_role, Quantity_of_products_produced,
+                    Salary, Subdivision_ID, Adress, cheese_equipment, milk_equipment, login, passw, role_)
+                values('{username}','{surname}','{telephone}','{work_role}','{quantity}','{salary}','{subdivision}','{adres}','false','true', '{login_}', '{password}', '{position}');
+        """
 
         try:
             execute_query('farm_director', 'director', query)
@@ -227,23 +249,39 @@ def directorupdatestaff(username):
         staff_id = request.form["staff_id"]
         username = request.form["name_login"]
         surname = request.form['surname']
+        work_role = request.form['work_role']
         telephone = request.form['telephone']
         salary = request.form['salary']
         quantity = request.form['quantity']
         subdivision = request.form['subdivision']
         adres = request.form['adres']
-        milk = request.form['milk']
-        cheese = request.form['cheese']
         position = request.form['position']
-
+        login_ = request.form['login']
+        password = request.form['password']
+        
         session_ = loadSession('farm_director:director')
-        query = ""
+        query = f'''
+            UPDATE staff
+            set
+                First_name = '{username}',
+                Last_name = '{surname}',
+                Phone_number = '{telephone}',
+                Work_role = '{work_role}',
+                Quantity_of_products_produced = '{quantity}',
+                Salary = '{salary}',
+                Subdivision_ID = '{subdivision}',
+                Adress = '{adres}',
+                login = '{login_}',
+                passw = '{password}',
+                role_ = '{position}'
+            where staff_id = {staff_id};
+        '''
+        print(query)
 
         try:
             execute_query('farm_director', 'director', query)
             return redirect(url_for('directoraddstaffres', username=session['username']))
         except Exception as e:
-            # return render_template('Add_Staff.html')
             return render_template("update_staff.html", username=session['username'])
 
     else:
@@ -257,16 +295,8 @@ def directoraddstaffres(username):
     if 'username' not in session or session['username'] != username:
         abort(401)
     else:
-        print(role)
-        session_ = loadSession(role)
-        data_staff_res = session_.execute("""select name_staff, surname_staff, patronomyc_staff, mobile_telephone_staff,
-                                array_agg(coalesce(specialization_service, '')), array_agg(
-                                    coalesce(type_service, '')),
-                                            role_name from staff
-                                    full join service on id_service = service_id
-                                    full join roles on role_to_login = id_role
-                                    group by 1, 2, 3, 4, 7; """)
-        data = data_staff_res.fetchall()
+        query = """select * from staff;"""
+        data = execute_select_query('farm_director', 'director', query)
         return render_template("Add_Staff2.html", username=session['username'], data=data)
 
 
@@ -277,19 +307,15 @@ def directordelete(username):
     if request.method == 'POST':
         number = request.form['number']
 
-        # session_ = loadSession('farm_director:director')
-        query = ""
+        query = f"DELETE from staff where staff_id = {number};"
 
         try:
             execute_query('farm_director', 'director', query)
             return redirect(url_for('directoraddstaffres', username=session['username']))
         except Exception as e:
-            # return render_template('Add_Staff.html')
             return render_template("Delete.html", username=session['username'])
 
     return render_template("Delete.html", username=session['username'])
-
-
 
 
 @app.route('/director/check_products_spent/<username>', methods=('POST', 'GET'))
@@ -300,15 +326,16 @@ def director_spent_products(username):
         date_begin = request.form['date_begin']
         date_end = request.form['date_end']
 
-        # session_ = loadSession('farm_director:director')
-        query = ""
+
+        query = f"select * from sold_product('{date_begin}', '{date_end}');"
 
         try:
-            execute_query('farm_director', 'director', query)
-            return redirect(url_for('directoraddstaffres', username=session['username']))
+            data = execute_select_query('farm_director', 'director', query)
+            return render_template("spent_products.html", username=session['username'], data=data)
+
         except Exception as e:
-            # return render_template('Add_Staff.html')
-            return render_template("spent_products.html", username=session['username'])
+            pass
+        return render_template("spent_products.html", username=session['username'])
     return render_template("spent_products.html", username=session['username'])
 
 
@@ -319,12 +346,12 @@ def director_check_products(username):
     if request.method == 'POST':
         name = request.form['name']
 
-        # session_ = loadSession('farm_director:director')
-        query = ""
+
+        query = f"select * from check_product('{name}');"
 
         try:
-            execute_query('farm_director', 'director', query)
-            return redirect(url_for('directoraddstaffres', username=session['username']))
+            data = execute_select_query('farm_director', 'director', query)
+            return render_template("check_products.html", username=session['username'], data=data)
         except Exception as e:
             # return render_template('Add_Staff.html')
             return render_template("check_products.html", username=session['username'])
@@ -336,17 +363,18 @@ def director_staff_activity(username):
     if 'username' not in session or session['username'] != username:
         abort(401)
     if request.method == 'POST':
-        name = request.form['number']
+        number = request.form['number']
 
-        # session_ = loadSession('farm_director:director')
-        query = ""
+        query = f"""SELECT staff_id, last_name || ' ' || first_name as fio, chief_first_name || ' ' || chief_last_name as chief_fio, quantity_of_products_produced 
+                        from staff
+                        join subdivision using(subdivision_id)
+                        where staff_id = {number};"""
 
         try:
-            execute_query('farm_director', 'director', query)
-            return redirect(url_for('directoraddstaffres', username=session['username']))
+            data = execute_select_query('farm_director', 'director', query)
+            return render_template("staff_activity.html", username=session['username'], data=data)
         except Exception as e:
-            # return render_template('Add_Staff.html')
-            return render_template("staff_activity.html", username=session['username'])
+            pass
 
     return render_template("staff_activity.html", username=session['username'])
 
@@ -358,15 +386,20 @@ def director_subdiv_activity(username):
     if request.method == 'POST':
         adres = request.form['adres']
 
-        # session_ = loadSession('farm_director:director')
-        query = ""
+        query = f"""
+            select chief_first_name || ' ' || chief_last_name as chief_fio, product_type, quanity_of_produced, sum(product_count) as sold_amount
+                from subdivision
+                    join product USING(subdivision_id)
+                    join supply USING(product_id)
+                where addres = '{adres}'
+                GROUP by 1,2,3;
+        """
 
         try:
-            execute_query('farm_director', 'director', query)
-            return redirect(url_for('directoraddstaffres', username=session['username']))
+            data = execute_select_query('farm_director', 'director', query)
+            return render_template("subdiv_activity.html", username=session['username'], data=data)
         except Exception as e:
-            # return render_template('Add_Staff.html')
-            return render_template("subdiv_activity.html", username=session['username'])
+            pass
     return render_template("subdiv_activity.html", username=session['username'])
 
 
@@ -385,14 +418,16 @@ def directoraddsubdiv(username):
         surname = request.form["surname"]
         quantity = request.form["quantity"]
 
-        query = ""
+        query = f"""
+            INSERT INTO subdivision(chief_first_name, chief_last_name,city, quanity_of_produced, addres) 
+                VALUES('{name}', '{surname}', '{city}', {quantity}, '{adres}')
+        """
 
         try:
             execute_query('farm_director', 'director', query)
-            return redirect(url_for('directoraddstaffres', username=session['username']))
         except Exception as e:
-            # return render_template('Add_Staff.html')
-            return render_template("addsubdiv.html", username=session['username'])
+            pass
+        return render_template("addsubdiv.html", username=session['username'])
 
     else:
         return render_template("addsubdiv.html", username=session['username'])
@@ -414,14 +449,20 @@ def directorupdatesubdiv(username):
         surname = request.form["surname"]
         quantity = request.form["quantity"]
 
-        query = ""
+        query = f'''UPDATE subdivision
+                    SET
+                        chief_first_name = '{name}',
+                        chief_last_name = '{surname}',
+                        city = '{city}',
+                        quanity_of_produced = '{quantity}',
+                        addres = '{adres}'
+                    WHERE subdivision_id = {sub_id};'''
 
         try:
             execute_query('farm_director', 'director', query)
-            return redirect(url_for('directoraddstaffres', username=session['username']))
         except Exception as e:
-            # return render_template('Add_Staff.html')
-            return render_template("updatesubdiv.html", username=session['username'])
+            pass
+        return render_template("updatesubdiv.html", username=session['username'])
 
     else:
         return render_template("updatesubdiv.html", username=session['username'])
@@ -438,14 +479,13 @@ def directordeletesubdiv(username):
     if request.method == 'POST':
         sub_id = request.form["sub_id"]
 
-        query = ""
+        query = f"delete from subdivision where subdivision_id = {sub_id};"
 
         try:
-            execute_query('farm_director', 'director', query)
-            return redirect(url_for('directoraddstaffres', username=session['username']))
+            execute_query('farm_director', 'director', query)            
         except Exception as e:
-            # return render_template('Add_Staff.html')
-            return render_template("deletesubdiv.html", username=session['username'])
+            pass
+        return render_template("deletesubdiv.html", username=session['username'])
 
     else:
         return render_template("deletesubdiv.html", username=session['username'])
@@ -463,15 +503,15 @@ def directorupdatesalary(username):
         number = request.form["number"]
         salary = request.form['salary']
 
-        session_ = loadSession('farm_director:director')
-        query = ""
+        query = f"""UPDATE staff
+                    set salary = {salary}
+                    WHERE staff_id = {number};"""
 
         try:
             execute_query('farm_director', 'director', query)
-            return redirect(url_for('directoraddstaffres', username=session['username']))
         except Exception as e:
-            # return render_template('Add_Staff.html')
-            return render_template("updatesalary.html", username=session['username'])
+            pass
+        return render_template("updatesalary.html", username=session['username'])
 
     else:
         return render_template("updatesalary.html", username=session['username'])
@@ -500,21 +540,14 @@ def client_check_payment(username):
     if request.method == 'POST':
         first_date = request.form['first_date']
         last_date = request.form['last_date']
-        session_ = loadSession('farm_client:client')
-        query = f"""SELECT product_id, product_name, product_type, subdivision_id,
-                            product.product_price, quanity_of_produced
-                        from client
-                            JOIN order_ USING(client_id)
-                            JOIN supply USING(order_id)
-                            JOIN product USING(product_id)
-                            JOIN subdivision USING(subdivision_id)
-                            WHERE  order_.date_ between '{first_date}' and '{last_date}';"""
-        data = session_.execute(query).all()
+
+        query = f"""select * from client_bought_product('{first_date}', '{last_date}', '{session['username']}');"""
+        print(query)
         try:
-            execute_query('farm_client', 'client', query)
+            data = execute_select_query('farm_client', 'client', query)
+            return render_template('payments.html', data=data, username=session['username'])
         except Exception as identifier:
             pass
-        return render_template('payments.html', data=data, username=session['username'])
 
     return render_template('payments.html', username=session['username'])
 
@@ -526,14 +559,13 @@ def check_places(username):
 
     if request.method == 'POST':
         city = request.form['city']
-        session_ = loadSession('farm_client:client')
         query = f"""SELECT subdivision_id, addres, chief_first_name || ' ' || chief_last_name as chief from subdivision
                         where city = '{city}'"""
         try:
-            execute_query('farm_client', 'client', query)
+            data = execute_select_query('farm_client', 'client', query)
+            return render_template('city.html', username=session['username'], data=data)
         except Exception as identifier:
             pass
-        return render_template('city.html', username=session['username'], city=city)
     return render_template('city.html', username=session['username'])
 
 
@@ -542,19 +574,18 @@ def check_cost(username):
     if 'username' not in session or session['username'] != username:
         abort(401)
 
-    session_ = loadSession('farm_client:client')
-
     if request.method == 'POST':
         product_name = request.form['product_name']
 
-        try:
-            data = session_.execute(
-                f"""SELECT product_price, quanity_of_produced from product
+        try:            
+            query = f"""SELECT product_price, quanity_of_produced from product
                         JOIN subdivision USING (subdivision_id)
-                        WHERE product_name = '{product_name}'""")
+                        WHERE product_name = '{product_name}';"""
+            print(query)
+            data = execute_select_query('farm_client', 'client', query)
+            return render_template('cost.html', data=data, username=session['username'])
         except Exception as identifier:
             pass
-        return render_template('cost.html', data=data, username=session['username'])
     return render_template('cost.html', username=session['username'])
 
 # -------------------------------------------------------------------
@@ -584,7 +615,7 @@ def adminaddnewclient(username):
         login_ = request.form['login_']
         password = request.form['password']
         try:
-            query = f"SELECT * FROM addnewclient('{name}', '{surname}', '{lastname}', '{phone}');"
+            query = f"SELECT * FROM insert_new_client('{surname}', '{name}', '{phone}', '{adress}', '{login_}', '{password}' );"
             execute_query('farm_staff', 'staff', query)
             return redirect(url_for('admin', username=session['username']))
         except Exception as e:
@@ -602,7 +633,7 @@ def adminupdateclient(username):
         phone = request.form['phone']
         adres = request.form['adres']
         try:
-            query = f"SELECT * FROM addnewclient('{name}', '{surname}', '{lastname}', '{phone}');"
+            query = f"SELECT * FROM update_client('{name}', '{surname}', '{phone}', '{adres}');"
             execute_query('farm_staff', 'staff', query)
             return redirect(url_for('admin', username=session['username']))
         except Exception as e:
@@ -618,9 +649,10 @@ def admincheckproduct(username):
         product_name = request.form['product_name']
 
         try:
-            query = f"SELECT * FROM addnewclient('{name}', '{surname}', '{lastname}', '{phone}');"
-            execute_query('farm_staff', 'staff', query)
-            return redirect(url_for('admin', username=session['username']))
+            query = f"select * from check_product('{product_name}');"
+            print(query)
+            data = execute_select_query('farm_staff', 'staff', query)
+            return render_template("checkproduct.html", username=session['username'], data=data)
         except Exception as e:
             return render_template("checkproduct.html", username=session['username'])
     return render_template("checkproduct.html", username=session['username'])
@@ -635,9 +667,10 @@ def admincheckclient(username):
         client_sur = request.form['client_sur']
 
         try:
-            query = f"SELECT * FROM addnewclient('{name}', '{surname}', '{lastname}', '{phone}');"
-            execute_query('farm_staff', 'staff', query)
-            return redirect(url_for('admin', username=session['username']))
+            query = f"SELECT * from client_info WHERE last_name = '{client_sur}' and first_name = '{client_name}';"
+            data = execute_select_query('farm_staff', 'staff', query)
+            print(data)
+            return render_template("checkclient.html", username=session['username'], data=data)
         except Exception as e:
             return render_template("checkclient.html", username=session['username'])
     return render_template("checkclient.html", username=session['username'])
@@ -652,9 +685,11 @@ def adminsold_product(username):
         date_end = request.form['date_end']
 
         try:
-            query = f"SELECT * FROM addnewclient('{name}', '{surname}', '{lastname}', '{phone}');"
-            execute_query('farm_staff', 'staff', query)
-            return redirect(url_for('admin', username=session['username']))
+            query = f"select * from sold_product('{date_beg}', '{date_end}');"
+            print(query)
+            data = execute_select_query('farm_staff', 'staff', query)
+
+            return render_template("sold_product.html", username=session['username'], data=data)
         except Exception as e:
             return render_template("sold_product.html", username=session['username'])
     return render_template("sold_product.html", username=session['username'])

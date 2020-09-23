@@ -56,7 +56,7 @@ CREATE TABLE Supply(
  PRIMARY KEY(Order_ID, Product_ID)
 );
 
-<<<<<<< HEAD
+
 INSERT INTO Proffesion(Name_of_prof)
  values('Сыровар'),('Доярка'),('Молочник'),('Кладовщик');
 
@@ -161,7 +161,4 @@ CREATE TABLE product_mm_product_order(
     product_price int,
     PRIMARY key(product_order_id, product_id)
 );
-
-
->>>>>>> side_version
 

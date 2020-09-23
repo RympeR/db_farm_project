@@ -15,7 +15,7 @@ h1{
     background-size: cover;
 }
 a{
-    color: #fff;
+    color: #ffffff;
 }
 a:hover{
     text-decoration: none;
@@ -63,7 +63,6 @@ input[type="text"], input[type="password"]{
 .dws-submit2{
     padding: 13px 40px;
     font-size: 25px;
-    color: #fff;
     border: none;
     cursor: pointer;
     text-decoration: none;

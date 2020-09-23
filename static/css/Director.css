@@ -10,7 +10,7 @@ h1{
     justify-content: center;
     width: 100%;
     height: 30vh;
-    background:#abcdef;
+    background:rgb(39, 185, 243);
     -webkit-background-size: cover;
     background-size: cover;
 }
@@ -54,7 +54,6 @@ input[type="name"], input[type="surname"], input[type="patronomyc"], input[type=
     position: absolute;
     right: 12px;
     text-align: center;
-    box-shadow: 0 -5px 0 blue;
     border-radius: 0 0 10px 10px;
     margin-top: 165px;
 }
@@ -68,14 +67,13 @@ input[type="name"], input[type="surname"], input[type="patronomyc"], input[type=
 }
 .container2{
     width: 450px;
-    height: 1000px;
+    height: 900px;
     background-color: #333;
     position: absolute;
     left: 12px;
     text-align: center;
-    box-shadow: 0 -5px 0 blue;
     border-radius: 0 0 10px 10px;
-    margin-top: 190px;
+    margin-top: 250px;
 }
 .container2 img{
     width: 120px;

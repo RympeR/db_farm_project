@@ -95,14 +95,15 @@ SELECT product_id, product_name, product_type,
         JOIN subdivision USING(subdivision_id)
         WHERE product_name='Счастье'
 
+drop view client_info
 CREATE OR REPLACE VIEW client_info as
-    SELECT client_id, client.first_name || ' ' || client.last_name as client_fio,
+    SELECT client_id, client.first_name, client.last_name,
         client.adress_of_client, product_name, product_type
         from client
         JOIN order_ USING(client_id)
         JOIN supply USING(order_id)
         JOIN product USING(product_id)
-    GROUP BY 2, 3, 4, 1, 5
+    GROUP BY 2, 3, 4, 5, 1, 6
 
 SELECT * from client_info WHERE client_id=1
 
@@ -127,8 +128,6 @@ UPDATE staff
 DELETE from staff
     where staff_id = 1;
 
-select * FROM client_info;
-
 SELECT staff_id, last_name || ' ' || first_name as fio, chief_first_name || ' ' || chief_last_name as chief_fio, quantity_of_products_produced 
     from staff
     join subdivision using(subdivision_id)
@@ -140,5 +139,4 @@ select chief_first_name || ' ' || chief_last_name as chief_fio, product_type, qu
         join supply USING(product_id)
     where addres = 'fontan 1a'
     GROUP by 1,2,3
-
 

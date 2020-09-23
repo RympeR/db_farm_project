@@ -599,8 +599,8 @@ def adminupdateclient(username):
     if request.method == 'POST':
         name = request.form['name']
         surname = request.form['surname']
-        lastname = request.form['lastname']
-        phone = request.form['telephone']
+        phone = request.form['phone']
+        adres = request.form['adres']
         try:
             query = f"SELECT * FROM addnewclient('{name}', '{surname}', '{lastname}', '{phone}');"
             execute_query('farm_staff', 'staff', query)
@@ -615,7 +615,6 @@ def admincheckproduct(username):
     if 'username' not in session or session['username'] != username:
         abort(401)
     if request.method == 'POST':
-        product_num = request.form['product_num']
         product_name = request.form['product_name']
 
         try:
@@ -632,7 +631,6 @@ def admincheckclient(username):
     if 'username' not in session or session['username'] != username:
         abort(401)
     if request.method == 'POST':
-        client_num = request.form['client_num']
         client_name = request.form['client_name']
         client_sur = request.form['client_sur']
 

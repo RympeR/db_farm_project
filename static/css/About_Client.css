@@ -7,6 +7,7 @@
     background: url("../imgs/FON_INTRO.png") center no-repeat;
     -webkit-background-size: cover;
     background-size: cover;
+    background-attachment: fixed;
 }
 a{
     color: #fff;

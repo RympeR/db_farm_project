@@ -7,37 +7,23 @@
 	href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap"
 	rel="stylesheet"
 />
-{% endblock %} {% block title %}Add_client {% endblock %} {% block body %}
+{% endblock %} {% block title %}Add_recourse{% endblock %} {% block body %}
 <div class="intro">
-	<h1>Добавить клиента</h1>
+	<h1>Добавить ресуры</h1>
 	<div class="container">
 		<img src="{{ url_for('static',filename='imgs/Service.jpg') }}" />
 		<form method="post">
 			<div class="dws-input">
-				<input type="text" name="name" placeholder="Имя клиента:" />
+				<input type="text" name="type" placeholder="Тип ресурса:" />
 			</div>
 			<div class="dws-input">
-				<input
-					type="text"
-					name="surname"
-					placeholder="Фамилия клиента:"
-				/>
-			</div>
-			<div class="dws-input">
-				<input
-					type="text"
-					name="phone"
-					placeholder="Телефон:"
-				/>
-			</div>
-			<div class="dws-input">
-				<input type="text" name="adress" placeholder="Адрес клиента" />
+				<input type="text" name="price" placeholder="Цена ресурса:" />
 			</div>
             <div class="dws-input">
-				<input type="text" name="login_" placeholder="Логин:" />
+				<input type="text" name="count" placeholder="Кол-во ресурсов:" />
 			</div>
             <div class="dws-input">
-				<input type="text" name="password" placeholder="Пароль:" />
+				<input type="text" name="subdiv" placeholder="Номер отделения:" />
 			</div>
 			<br />
 			<br />
@@ -47,7 +33,7 @@
 				name="submit"
 				value="Report"
 			>
-				Добавить клиента
+				Добавить ресуры
 			</button>
 			<br />
 			<br />

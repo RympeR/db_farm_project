@@ -1,45 +1,11 @@
 from flask import Flask, render_template, url_for, redirect, request, session, flash, get_flashed_messages, abort
-from sqlalchemy import create_engine, MetaData
-import psycopg2
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import scoped_session, sessionmaker
-
-db = SQLAlchemy()
+from model import *
 
 app = Flask(__name__)
 app.secret_key = 'somesecretkeythatonlyishouldknow'
 session_variables = []
 role = 'farm_guest:guest'
 
-
-def execute_query(user, password, query):
-    conn = psycopg2.connect(
-        host="127.0.0.1",
-        database="farm",
-        user=user,
-        password=password
-    )
-    cursor = conn.cursor()
-    cursor.execute(query)
-    conn.commit()
-    conn.close()
-
-
-def execute_select_query(user, password, query, f_all=True):
-    conn = psycopg2.connect(
-        host="127.0.0.1",
-        database="farm",
-        user=user,
-        password=password
-    )
-    cursor = conn.cursor()
-    cursor.execute(query)
-    if f_all:
-        data = cursor.fetchall()
-    else:
-        data = cursor.fetchone()
-    conn.close()
-    return data
 
 
 def loadSession(role):
@@ -252,7 +218,7 @@ def directorupdatestaff(username):
         position = request.form['position']
         login_ = request.form['login']
         password = request.form['password']
-        
+
         session_ = loadSession('farm_director:director')
         query = f'''
             UPDATE staff
@@ -320,7 +286,6 @@ def director_spent_products(username):
         date_begin = request.form['date_begin']
         date_end = request.form['date_end']
 
-
         query = f"select * from sold_product('{date_begin}', '{date_end}');"
 
         try:
@@ -339,7 +304,6 @@ def director_check_products(username):
         abort(401)
     if request.method == 'POST':
         name = request.form['name']
-
 
         query = f"select * from check_product('{name}');"
 
@@ -414,7 +378,7 @@ def directoraddsubdiv(username):
 
         query = f"""
             INSERT INTO subdivision(chief_first_name, chief_last_name,city, quanity_of_produced, addres) 
-                VALUES('{name}', '{surname}', '{city}', {quantity}, '{adres}')
+                VALUES('{name}', '{surname}', '{city}', {quantity}, '{adres}');
         """
 
         try:
@@ -476,7 +440,7 @@ def directordeletesubdiv(username):
         query = f"delete from subdivision where subdivision_id = {sub_id};"
 
         try:
-            execute_query('farm_director', 'director', query)            
+            execute_query('farm_director', 'director', query)
         except Exception as e:
             pass
         return render_template("deletesubdiv.html", username=session['username'])
@@ -545,6 +509,24 @@ def client_check_payment(username):
 
     return render_template('payments.html', username=session['username'])
 
+@app.route('/client/add_order/<username>/', methods=('POST', 'GET'))
+def client_add_order(username):
+    if 'username' not in session or session['username'] != username:
+        abort(401)
+
+    if request.method == 'POST':
+        prod_name = request.form['prod_name']
+        prod_amount = request.form['prod_amount']
+
+        query = f"""select * from add_order('{prod_name}', {prod_amount}, '{session['username']}');"""
+        print(query)
+        try:
+            data = execute_select_query('farm_client', 'client', query)
+            return render_template('add_client_order.html', username=session['username'])
+        except Exception as identifier:
+            pass
+
+    return render_template('add_client_order.html', username=session['username'])
 
 @app.route('/client/check_places/<username>/', methods=('POST', 'GET'))
 def check_places(username):
@@ -571,7 +553,7 @@ def check_cost(username):
     if request.method == 'POST':
         product_name = request.form['product_name']
 
-        try:            
+        try:
             query = f"""SELECT product_price, quanity_of_produced from product
                         JOIN subdivision USING (subdivision_id)
                         WHERE product_name = '{product_name}';"""
@@ -595,6 +577,38 @@ def admin(username):
     data1 = data1.first()
     print(data1)
     return render_template('Admin.html', dirstaff=data1, username=session['username'])
+
+
+@app.route('/admin/check_resources/<username>')
+def check_resources(username):
+    if 'username' not in session or session['username'] != username:
+        abort(401)
+
+    data = execute_select_query("farm_staff","staff",f"SELECT * from order_resource;")
+    return render_template('check_resources.html', data=data, username=session['username'])
+
+
+@app.route('/admin/order_resource/<username>/', methods=('POST', 'GET'))
+def add_order(username):
+    if 'username' not in session or session['username'] != username:
+        abort(401)
+
+    if request.method == 'POST':
+        type_ = request.form['type']
+        price = request.form['price']
+        count = request.form['count']
+        subdiv = request.form['subdiv']
+
+        query = f"""INSERT INTO order_resource(resource_type, resource_price,
+                        resource_count, subdivision_id) VALUES
+                    ('{type_}','{price}','{count}',{subdiv});"""
+        try:
+            print(query)
+            execute_query('farm_staff', 'staff', query)
+            return render_template('add_resource.html', username=session['username'])
+        except Exception as identifier:
+            pass
+    return render_template('add_resource.html', username=session['username'])
 
 
 @app.route('/admin/addclient/<username>', methods=['POST', 'GET'])

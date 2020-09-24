@@ -217,3 +217,12 @@ WHERE subdivision_id = {id};
 --удаление подразделения
 delete from subdivision
   where subdivision_id = {id};
+
+--оформление заказа
+CREATE OR REPLACE FUNCTION add_order(prod_name varchar, prod_amount numeric, client_login varchar) RETURNS VOID AS $$
+insert into order_(date_, client_id) VALUES
+  (now()::date, (SELECT client_id from client WHERE client.login = client_login));
+insert into supply (order_id, product_id, product_price, product_count) VALUES
+  ((SELECT max(order_id) from order_), (select product_id FROM product where product_name = prod_name), (select product_price FROM product where product_name = prod_name), prod_amount);
+
+$$ LANGUAGE SQL;
